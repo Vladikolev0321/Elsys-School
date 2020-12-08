@@ -298,7 +298,34 @@ void connect_routers_from_network_txt(vector<Router*> routers)//&
 	istream.close();
 
 }
+vector<Package*> packages_to_sent_from_packages_txt()
+{
+	ifstream istream;
+	istream.open("packages.txt");
 
+	string line;
+	while(getline(istream, line))
+	{
+		stringstream S(line);
+		string sourceAddress;
+		string targetAddress;
+		string content;
+
+		getline(S, sourceAddress, ' ');
+		getline(S, targetAddress, ' ');
+		getline(S, content, ' ');
+
+	/*	char cont[content.size()-1];
+		for (int i = 1; i < content.size() - 1; ++i)
+		{
+			cont[i] = content[i];
+		}
+		//cout<<cont<<endl;
+*/
+
+	}
+	istream.close();
+}
 int main()
 {
 	vector<Router*> routers;
@@ -322,7 +349,7 @@ int main()
 		currRouter->print_routers_connected_to();
 	}
 
-
+	//packages_to_sent_from_packages_txt();
 
 
 }
