@@ -3,6 +3,8 @@
 #include <string.h>
 #include <list>
 #include <vector>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 class Package {
@@ -91,8 +93,8 @@ class Router {
 	list<InformationForKnownRoutes> routing_table;
 public:
 
-	static const int max_count_elem_in_routing_table;
-	static const int max_hops;
+	static const int max_count_elem_in_routing_table = 10;
+	static const int max_hops = 5;
 
 	Router(string name, string ip_address)
 	{
@@ -100,7 +102,14 @@ public:
 		this->ip_address = ip_address;
 		this->sent_packages = 0;
 	}
-
+	string get_ip()const
+	{
+		return this->ip_address;
+	}
+	string get_name()const
+	{
+		return this->name;
+	}
 	void add_router(/*const*/ Router* router)
 	{
 		if(router->ip_address == "127.0.0.0" || router->ip_address == "0.0.0.0")
@@ -127,11 +136,11 @@ public:
 		if (hop_count > 1)
 		{/////is != or <
 		///hops is not used to ask!!!!!!!!!!!!!
-			int i = 0;
-			for (vector<Router>::iterator it = this->routers_connected_to.begin(); it != this->routers_connected_to.end(); it++,i++)
+			
+			for (int i = 0; i < routers_connected_to.size(); i++)
 			{
-				Router currRouter = *it;
-				if (currRouter.query_route(address, hop_count - 1) == 1)
+				Router *currRouter = routers_connected_to.at(i);
+				if (currRouter->query_route(address, hop_count - 1) == 1)
 				{
 					if(routing_table.size() == max_count_elem_in_routing_table)
 					{
@@ -211,10 +220,109 @@ public:
 		}
 	}
 
+	void print_routers_connected_to()
+	{
+		cout<<"Router named:"<<this->name<<" has "<<routers_connected_to.size()<<" routers with names:"<<endl;
+		for (int i = 0; i < this->routers_connected_to.size(); i++)
+		{
+			Router *router = this->routers_connected_to[i];
+			cout<<router->name<<endl;
+		}
+	}
+
 	
 
 };
+
+vector<Router*> read_from_routers_txt()
+{
+	vector<Router*> routers;
+
+	ifstream istream;
+	istream.open("routers.txt");
+
+	string line;
+	while(getline(istream, line))
+	{
+		//cout<<line<<endl;
+		stringstream S(line);
+		string currName;
+		string currIp;
+
+		getline(S, currName, ' ');
+		getline(S, currIp, ' ');
+
+		Router *router = new Router(currName, currIp);
+		routers.push_back(router);
+
+
+	}
+	istream.close();
+
+	return routers;
+}
+void connect_routers_from_network_txt(vector<Router*> routers)//&
+{
+	ifstream istream;
+	istream.open("networks.txt");
+
+	string line;
+	while(getline(istream, line))
+	{
+		//cout<<line<<endl;
+		stringstream S(line);
+		string firstName;
+		string secondName;
+		Router *firstRouter;
+		Router *secondRouter;
+
+		getline(S, firstName, ' ');
+		getline(S, secondName, ' ');
+
+		for (int i = 0; i < routers.size(); i++)
+		{
+			if(routers[i]->get_name() == firstName)
+			{
+				firstRouter = routers[i];
+			}
+			else if(routers[i]->get_name() == secondName)
+			{
+				secondRouter = routers[i];	
+			}
+		}
+		firstRouter->add_router(secondRouter);
+		secondRouter->add_router(firstRouter);
+
+
+	}
+	istream.close();
+
+}
+
 int main()
 {
-	return 0;
+	vector<Router*> routers;
+	vector<Package*> packages;
+
+	routers = read_from_routers_txt();
+
+	cout<<"Routers info:"<<endl;
+	cout<<"Routers count:"<<routers.size()<<endl;
+	for (int i = 0; i < routers.size(); i++)
+	{
+		Router *currRouter = routers.at(i);
+		cout<<currRouter->get_name()<<" "<<currRouter->get_ip()<<endl;
+	}
+
+	connect_routers_from_network_txt(routers);
+
+	for (int i = 0; i < routers.size(); i++)
+	{
+		Router *currRouter = routers.at(i);
+		currRouter->print_routers_connected_to();
+	}
+
+
+
+
 }
