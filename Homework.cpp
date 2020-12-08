@@ -13,7 +13,7 @@ class Package {
 	int number_of_packet;
 public:
 	//static int created_packet_counter = 0;
-	Package(char *content, int content_length, string ip_sent,string ip_to)
+	Package(char* content, int content_length, string ip_sent, string ip_to)
 	{
 		if (strlen(content) == 0) {
 			throw "Content is empty";
@@ -31,12 +31,20 @@ public:
 		this->ip_to = ip_to;
 		this->number_of_packet = created_packet_counter;
 	}
+	char* get_content()const
+	{
+		return this->content;
+	}
 	string get_ip_to()const
 	{
 		return this->ip_to;
 	}
+	string get_ip()const
+	{
+		return this->ip_sent;
+	}
 	int validate()
-	{	
+	{
 		//int counter = 0;
 		/*for(int i = 0;;i++)
 		{
@@ -63,17 +71,19 @@ public:
 class Router {
 	string name;
 	string ip_address;
-	vector<Router> routers_connected_to;
+	vector<Router> routers_connected_to;/////To have pointer
+	int sent_packages;
+
 	class InformationForKnownRoutes {
 		string ip;
 		int index_in_routers;
-		int count_sent_packets;
 	public:
-
+		int count_sent_packets;
 		InformationForKnownRoutes(string ip, int index)
 		{
 			this->ip = ip;
 			this->index_in_routers = index;
+			this->count_sent_packets = 0;
 		}
 
 		string get_ip()
@@ -89,16 +99,22 @@ class Router {
 	list<InformationForKnownRoutes> routing_table;
 public:
 
+	static const int max_count_elem_in_routing_table;
+	static const int max_hops;
+
 	Router(string name, string ip_address)
 	{
-		const static int max_count_elem_in_routing_table;
-		const static int max_hops;
 		this->name = name;
 		this->ip_address = ip_address;
+		this->sent_packages = 0;
 	}
 
 	void add_router(const Router& router)
 	{
+		if (router.ip_address == "127.0.0.0" || router.ip_address == "0.0.0.0")
+		{
+			throw "cannot add router with this ip adress";
+		}
 		routers_connected_to.push_back(router);
 	}
 
@@ -110,7 +126,7 @@ public:
 		}
 		for (list<InformationForKnownRoutes>::iterator it = this->routing_table.begin(); it != this->routing_table.end(); it++)
 		{
-			InformationForKnownRoutes currInfo= *it;
+			InformationForKnownRoutes currInfo = *it;
 			if (currInfo.get_ip() == address)
 			{
 				return 1;
@@ -120,11 +136,15 @@ public:
 		{/////is != or <
 		///hops is not used to ask!!!!!!!!!!!!!
 			int i = 0;
-			for (vector<Router>::iterator it = this->routers_connected_to.begin(); it != this->routers_connected_to.end(); it++,i++)
+			for (vector<Router>::iterator it = this->routers_connected_to.begin(); it != this->routers_connected_to.end(); it++, i++)
 			{
 				Router currRouter = *it;
 				if (currRouter.query_route(address, hop_count - 1) == 1)
 				{
+					if (routing_table.size() == max_count_elem_in_routing_table)
+					{
+						routing_table.pop_back();
+					}
 					routing_table.push_back(InformationForKnownRoutes(address, i));
 					return 1;
 				}
@@ -135,20 +155,81 @@ public:
 	}
 	void send_package(const Package& package)
 	{
-		if (this->ip_address != package.get_ip_to())
+		if (strlen(package.get_content()) == 0 || package.get_content() == NULL)
 		{
-			for (list<InformationForKnownRoutes>::iterator it = this->routing_table.begin(); it != this->routing_table.end(); it++)
+			throw "Content is empty";
+		}
+		if (package.get_ip() == "127.0.0.0" || package.get_ip() == "0.0.0.0")
+		{
+			throw "Package ip cannot be this";
+		}
+		if (this->ip_address == package.get_ip_to())
+		{
+			cout << "Package received" << endl;
+			this->sent_packages++;
+			check_if_count_sent_is_10();
+			return;
+		}
+		/////to send_package to next router who is next?
+		for (list<InformationForKnownRoutes>::iterator it = this->routing_table.begin(); it != this->routing_table.end(); it++)
+		{
+			InformationForKnownRoutes currInfo = *it;
+			if (currInfo.get_ip() == package.get_ip_to())
 			{
-				InformationForKnownRoutes currInfo = *it;
-				if (currInfo.get_ip() == package.get_ip_to())
+				cout << "Package sent" << endl;
+				currInfo.increase_count_sent_packets();
+				this->sent_packages++;
+				check_if_count_sent_is_10();
+				return;
+				//break;
+			}
+		}
+
+		int resFromQueryRoute = this->query_route(package.get_ip_to(), max_hops);
+		if (resFromQueryRoute == 1)
+		{
+			cout << "Package sent!" << endl;
+			this->sent_packages++;
+			check_if_count_sent_is_10();
+		}
+		else
+		{
+			cout << "Package dumped" << endl;
+		}
+
+	}
+	void check_if_count_sent_is_10()
+	{
+		if (this->sent_packages % 10 == 0)
+		{
+
+			vector<InformationForKnownRoutes> temp_routing_table;
+			for (int i = 0; i < routing_table.size(); ++i)
+			{
+				temp_routing_table.push_back(routing_table.front());
+				routing_table.pop_front();
+			}
+			///sorting routing table
+			for (int i = 0; i < temp_routing_table.size(); i++)
+			{
+				for (int j = i + 1; j < temp_routing_table.size(); j++)
 				{
-					currInfo.increase_count_sent_packets();
-					break;
+					if (temp_routing_table[i].count_sent_packets < temp_routing_table[j].count_sent_packets)
+					{
+						InformationForKnownRoutes temp = temp_routing_table[i];
+						temp_routing_table[i] = temp_routing_table[j];
+						temp_routing_table[j] = temp;
+					}
 				}
+			}
+			for (int i = 0; i < temp_routing_table.size(); i++)
+			{
+				this->routing_table.push_back(temp_routing_table[i]);
 			}
 		}
 	}
-	
+
+
 
 };
 int main()
