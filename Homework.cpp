@@ -5,7 +5,6 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-//#include <bits/stdc++.h>
 using namespace std;
 
 class Package {
@@ -15,7 +14,7 @@ class Package {
 	string ip_to;
 	int number_of_packet;
 public:
-	//static int created_packet_counter = 0;
+	static int created_packet_counter;
 	Package(char *content,string ip_sent,string ip_to)
 	{
 		if (strlen(content) == 0) {
@@ -26,7 +25,7 @@ public:
 		{
 			throw "Not supported addresses";
 		}
-		static int created_packet_counter = 0;
+		//static int created_packet_counter = 0;
 		created_packet_counter++;
 		this->content = content;
 		this->content_length = content_length;
@@ -38,18 +37,16 @@ public:
 	{
 		return this->ip_to;
 	}
+	string get_ip()const
+	{
+		return this->ip_sent;
+	}
+	char* get_content()const
+	{
+		return this->content;
+	}
 	int validate()
 	{	
-		//int counter = 0;
-		/*for(int i = 0;;i++)
-		{
-			counter++;
-			if (this->content[i] == '\0')
-			{
-				break;
-			}
-		}
-		*/
 		int counter = strlen(this->content);
 		if (counter == this->content_length)
 		{
@@ -63,6 +60,8 @@ public:
 	}
 
 };
+int Package::created_packet_counter = 0;
+
 class Router {
 	string name;
 	string ip_address;
@@ -80,12 +79,18 @@ class Router {
 			this->index_in_routers = index;
 			this->count_sent_packets = 0;
 		}
-
+		int get_index()const
+		{
+			return this->index_in_routers;
+		}
 		string get_ip()
 		{
 			return this->ip;
 		}
-
+		int get_info_count_sent_packages()
+		{
+			return this->count_sent_packets;
+		}
 		void increase_count_sent_packets()
 		{
 			this->count_sent_packets++;
@@ -94,8 +99,8 @@ class Router {
 	list<InformationForKnownRoutes> routing_table;
 public:
 
-	static const int max_count_elem_in_routing_table = 10;
-	static const int max_hops = 5;
+	static const int max_count_elem_in_routing_table;
+	static const int max_hops;
 
 	Router(string name, string ip_address)
 	{
@@ -126,6 +131,7 @@ public:
 		{
 			return 1;
 		}
+
 		for (list<InformationForKnownRoutes>::iterator it = this->routing_table.begin(); it != this->routing_table.end(); it++)
 		{
 			InformationForKnownRoutes currInfo= *it;
@@ -134,14 +140,14 @@ public:
 				return 1;
 			}
 		}
+
 		if (hop_count > 1)
 		{/////is != or <
-		///hops is not used to ask!!!!!!!!!!!!!
-			
+
 			for (int i = 0; i < routers_connected_to.size(); i++)
 			{
-				Router *currRouter = routers_connected_to.at(i);
-				if (currRouter->query_route(address, hop_count - 1) == 1)
+				Router *currRouter = routers_connected_to.at(i);	
+				if (currRouter->query_route(address, hop_count - 1) == 1)///---
 				{
 					if(routing_table.size() == max_count_elem_in_routing_table)
 					{
@@ -156,12 +162,20 @@ public:
 
 	}
 	void send_package(const Package& package)
-	{
-		//if(pa)
+	{	
+		if(package.get_ip() == "127.0.0.0" || package.get_ip() == "0.0.0.0")
+		{
+			throw "cannot send package with this ip adress";
+		}
+		if(strlen(package.get_content()) == 0)
+		{
+			throw "cannot send empty package";
+		}
 		if (this->ip_address == package.get_ip_to())
 		{
 			cout<<"Package received"<<endl;
 			this->sent_packages++;
+			check_if_count_sent_is_10();
 			return;
 		}
 		/////to send_package to next router who is next?
@@ -173,8 +187,9 @@ public:
 				cout<<"Package sent"<<endl;
 				currInfo.increase_count_sent_packets();
 				this->sent_packages++;
+				routers_connected_to[currInfo.get_index()]->send_package(package);
+				check_if_count_sent_is_10();
 				return;
-				//break;
 			}
 		}
 
@@ -183,6 +198,7 @@ public:
 		{
 			cout<<"Package sent!"<<endl;
 			this->sent_packages++;
+			check_if_count_sent_is_10();
 		}
 		else
 		{
@@ -234,7 +250,8 @@ public:
 	
 
 };
-
+const int Router::max_count_elem_in_routing_table = 10;
+const int Router::max_hops = 5;
 vector<Router*> read_from_routers_txt()
 {
 	vector<Router*> routers;
@@ -327,22 +344,22 @@ void packages_to_sent_from_packages_txt(vector<Router*> routers)
 
 		strcpy(content, cont.c_str());
 		//cout<<content<<endl;
+		try{
+			Package *currPackage = new Package(content, sourceAddress, targetAddress);
 
-		Package *currPackage = new Package(content, sourceAddress, targetAddress);
-
-		for (int i = 0; i < routers.size(); ++i)
-		{
-			if(routers[i]->get_ip() == sourceAddress)
+			for (int i = 0; i < routers.size(); ++i)
 			{
-				cout<<"From router's name:"<<routers[i]->get_name()<<endl;
-				routers[i]->send_package(*currPackage);
+				if(routers[i]->get_ip() == sourceAddress)
+				{
+					cout<<"From router's name:"<<routers[i]->get_name()<<endl;
+					routers[i]->send_package(*currPackage);
+				}
 			}
 		}
-
-
-
-
-
+		catch(const char *ex)
+		{
+			cout<<ex<<endl;
+		}
 	}
 	istream.close();
 
@@ -376,5 +393,5 @@ int main()
 	cout<<"Sending packages:"<<endl;
 	packages_to_sent_from_packages_txt(routers);
 
-
+	cout<<Package::created_packet_counter<<endl;
 }
