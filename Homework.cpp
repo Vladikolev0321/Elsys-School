@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+//#include <bits/stdc++.h>
 using namespace std;
 
 class Package {
@@ -15,7 +16,7 @@ class Package {
 	int number_of_packet;
 public:
 	//static int created_packet_counter = 0;
-	Package(char *content, int content_length, string ip_sent,string ip_to)
+	Package(char *content,string ip_sent,string ip_to)
 	{
 		if (strlen(content) == 0) {
 			throw "Content is empty";
@@ -298,8 +299,10 @@ void connect_routers_from_network_txt(vector<Router*> routers)//&
 	istream.close();
 
 }
-vector<Package*> packages_to_sent_from_packages_txt()
+void packages_to_sent_from_packages_txt(vector<Router*> routers)
 {
+	vector<Package*> packages;
+
 	ifstream istream;
 	istream.open("packages.txt");
 
@@ -309,22 +312,41 @@ vector<Package*> packages_to_sent_from_packages_txt()
 		stringstream S(line);
 		string sourceAddress;
 		string targetAddress;
-		string content;
+		string cont;
 
 		getline(S, sourceAddress, ' ');
 		getline(S, targetAddress, ' ');
-		getline(S, content, ' ');
+		//getline(S, content, ' ');
+		char separator;
+		S >> separator;
+		//cout<<separator<<endl;
+		getline(S, cont, '"');
 
-	/*	char cont[content.size()-1];
-		for (int i = 1; i < content.size() - 1; ++i)
+
+		char content[cont.size()+1];
+
+		strcpy(content, cont.c_str());
+		//cout<<content<<endl;
+
+		Package *currPackage = new Package(content, sourceAddress, targetAddress);
+
+		for (int i = 0; i < routers.size(); ++i)
 		{
-			cont[i] = content[i];
+			if(routers[i]->get_ip() == sourceAddress)
+			{
+				cout<<"From router's name:"<<routers[i]->get_name()<<endl;
+				routers[i]->send_package(*currPackage);
+			}
 		}
-		//cout<<cont<<endl;
-*/
+
+
+
+
 
 	}
 	istream.close();
+
+
 }
 int main()
 {
@@ -340,7 +362,8 @@ int main()
 		Router *currRouter = routers.at(i);
 		cout<<currRouter->get_name()<<" "<<currRouter->get_ip()<<endl;
 	}
-
+	
+	cout<<endl;
 	connect_routers_from_network_txt(routers);
 
 	for (int i = 0; i < routers.size(); i++)
@@ -349,7 +372,9 @@ int main()
 		currRouter->print_routers_connected_to();
 	}
 
-	//packages_to_sent_from_packages_txt();
+	cout<<endl;
+	cout<<"Sending packages:"<<endl;
+	packages_to_sent_from_packages_txt(routers);
 
 
 }
