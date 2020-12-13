@@ -23,7 +23,7 @@ void print_matrix(double A[][M],int n, int m)
 }
 void Gaus(double A[][5], double X[], int n)
 {
-
+	////////////////////////////
 	for(int i = 0;i < 4;i++)
 	{
 		for(int k = i+1;k < 4;k++)
@@ -50,6 +50,8 @@ void Gaus(double A[][5], double X[], int n)
 		cout << X[y] << " ";
 	}
 	cout<<endl;
+	//////////////////////////////
+	
 	//X[n] = {0};
 
 	/*for(int i = 0; i < n; i++)
@@ -185,34 +187,19 @@ void find_diff_in_quantity(double Input[][M], double Res[][4])
 	double X[4]; 
 	Gaus(Input2, X, 4);
 
-	for (int i = 1; i < 4; ++i)
+
+
+	cout<<"Final matrix:"<<endl;
+	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 		{
-			Res[i+1][j] = Res[i+1][j]*(1 - values[i-1]/X[i-1]);
+			Res[i+1][j] = Input[i][j]*(1 - values[j]/X[j]);
 		}
 	}
 
 	print_matrix(Res, 5, 4);
 
-
-	/*
-	cout<<endl;
-	for(int i = 0; i < 4; i++)
-	{
-		for(int j = 0; j < 5; j++)
-		{
-			cout<<Input2[i][j]<<" ";
-		}
-		cout << endl;
-	}
-	*/
-
-
-
-
-	
-	
 
 
 }
