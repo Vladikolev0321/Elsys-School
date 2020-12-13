@@ -23,38 +23,7 @@ void print_matrix(double A[][M],int n, int m)
 }
 void Gaus(double A[][5], double X[], int n)
 {
-	////////////////////////////
-	for(int i = 0;i < 4;i++)
-	{
-		for(int k = i+1;k < 4;k++)
-		{
-			double num = -(A[k][i]/A[i][i]);
-			for(int j = i;j <= 4;j++)
-			{
-				A[k][j] += A[i][j]*num;
-			}
-		}
-	}
-
-	for(int i = 4-1;i>=0;--i)
-	{
-		X[i] = A[i][4]/A[i][i];
-		for(int j = 4-1;i < j;--j)
-		{
-			X[i] -= (X[j] * A[i][j]) / A[i][i];
-		}
-	}
-
-	cout<<endl;
-	for (int y = 0; y < n; y++) {
-		cout << X[y] << " ";
-	}
-	cout<<endl;
-	//////////////////////////////
-	
-	//X[n] = {0};
-
-	/*for(int i = 0; i < n; i++)
+	for(int i = 0; i < n; i++)
 	{
 		for(int j = i+1; j < n; j++)
 		{
@@ -69,8 +38,6 @@ void Gaus(double A[][5], double X[], int n)
 			}
 		}
 	}
-
-	//print_matrix(A, n, n+1);
 
 	for(int i = 0; i < n;i++)
 	{
@@ -92,33 +59,15 @@ void Gaus(double A[][5], double X[], int n)
 			X[i] -= (X[j] * A[i][j]) / A[i][i];
 		}
 	}
-	//print_matrix(A, n, n+1);
+	
 	cout<<endl;
-	for(int i = 0; i < 4; i++)
-	{
-		for(int j = 0; j < 5; j++)
-		{
-			cout<<A[i][j]<<" ";
-
-		}
-		cout << endl;
-	}
-	cout<<endl;
+	cout<<"X from Gaus method:"<<endl;
 	for (int y = 0; y < n; y++) {
 		cout << X[y] << " ";
 	}
-	*/
+	cout<<endl;
+	cout<<endl;
 	
-}
-void sum(const int A[][M], const int B[][M], int C[][M],int n, int m)
-{
-	for(int i = 0;i<n;i++)
-	{
-		for(int j = 0; j < m; j++)
-		{
-			C[i][j] = A[i][j] + B[i][j];
-		}
-	}
 }
 void read_matrix_from_file(double A[][M],int n, int m)
 {
@@ -139,7 +88,6 @@ void read_matrix_from_file(double A[][M],int n, int m)
 		{
 			string curr_num_as_string;
 			getline(S, curr_num_as_string, ' ');
-			//double curr_num = stod(curr_num_as_string);
 			double curr_num = atof(curr_num_as_string.c_str());
 
 			A[i][j] = curr_num;
@@ -148,7 +96,7 @@ void read_matrix_from_file(double A[][M],int n, int m)
 	istream.close();
 	
 }
-void get_our_bills(double Input[][M],double ResBills[][M], int n, int m)
+void get_our_first_line_bills(double Input[][M],double ResBills[][M], int n, int m)
 {
 	double values[4] = {0.129, 1.461, 85.07, 0.132};
 
@@ -163,6 +111,7 @@ void get_our_bills(double Input[][M],double ResBills[][M], int n, int m)
 	}
 
 	cout<<endl;
+	cout<<"Getting the first line of the result:"<<endl;
 	print_matrix(ResBills, n, m);
 }
 void find_diff_in_quantity(double Input[][M], double Res[][4])
@@ -213,13 +162,13 @@ int main()
 
 	read_matrix_from_file(Input, n1, n2);
 
+	cout<<endl;
+	cout<<"Matrix read from input:"<<endl;
 	print_matrix(Input, n1, n2);
 
 	double ResBills[5][4];
 
-	get_our_bills(Input, ResBills, n1, n2);
-
-	double Res[4][5];
+	get_our_first_line_bills(Input, ResBills, n1, n2);
 
 	find_diff_in_quantity(Input, ResBills);
 
