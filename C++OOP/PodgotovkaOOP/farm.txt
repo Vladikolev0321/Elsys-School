@@ -1,0 +1,2 @@
+typeStock: coco madeStock: 10 countWorkers: 10
+typeStock: coco madeStock: 20 countWorkers: 20

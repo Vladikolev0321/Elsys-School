@@ -1,0 +1,11 @@
+cheese
+30
+40
+cheese
+50
+30
+eggs
+20
+30
+stop
+

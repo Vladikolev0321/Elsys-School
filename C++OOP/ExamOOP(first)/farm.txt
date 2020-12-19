@@ -1,0 +1,3 @@
+type: cheese Quantity: 30 Count workers: 40
+type: cheese Quantity: 50 Count workers: 30
+type: eggs Quantity: 20 Count workers: 30
