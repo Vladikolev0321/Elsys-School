@@ -7,11 +7,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 
 char **parse_cmdline( const char *cmdline)
 {
-	
+	char *temp_cmd_line = malloc(sizeof(cmdline)*sizeof(char));
+	strcpy(temp_cmd_line, cmdline);
+	printf("%ld\n", strlen(temp_cmd_line));
+	printf("%ld\n", strlen(cmdline));
+
+	printf("%s\n", temp_cmd_line);
 }
 
 
@@ -19,11 +25,11 @@ int main()
 {
 	write(STDOUT_FILENO, "$ ", 2);
 
-	char *str = malloc(500 * sizeof(char));
+	char *buff = malloc(500 * sizeof(char));
 
 	while(1)
 	{
-		int bytesRead = read(STDIN_FILENO, str, 500);
+		int bytesRead = read(STDIN_FILENO, buff, 500);
 		if(bytesRead == 0)
 		{
 			break;
@@ -32,9 +38,11 @@ int main()
 		{
 			perror("Reading");
 		}
+
+
+		char **cmd_args = parse_cmdline(buff);
 	}
 	
-	printf("%s",str);
 	return 0;
 	
 }
