@@ -14,10 +14,28 @@ char **parse_cmdline( const char *cmdline)
 {
 	char *temp_cmd_line = malloc(sizeof(cmdline)*sizeof(char));
 	strcpy(temp_cmd_line, cmdline);
-	printf("%ld\n", strlen(temp_cmd_line));
-	printf("%ld\n", strlen(cmdline));
+	//printf("%ld\n", strlen(temp_cmd_line));
+	//printf("%ld\n", strlen(cmdline));
+	//printf("%s\n", temp_cmd_line);
 
-	printf("%s\n", temp_cmd_line);
+	char **cmd_args = malloc(sizeof(char*));
+
+	char *curr_tok = strtok(temp_cmd_line, " ");
+	//cmd_args[0] = curr_tok;
+	int count = 0;
+
+	while(curr_tok != NULL)
+	{
+		cmd_args[count] = curr_tok;
+		count++;
+		curr_tok = strtok(NULL, " ");
+	}
+
+	for (int i = 0; i < count; i++)
+	{
+		printf("%s\n", cmd_args[i]);
+	}
+
 }
 
 
