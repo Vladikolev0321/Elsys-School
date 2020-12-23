@@ -32,35 +32,38 @@ char **parse_cmdline( const char *cmdline)
 		{
 			break;
 		}
+		cmd_args = (char**)realloc(cmd_args, (count+1) * sizeof(char*));
+		cmd_args[count] = curr_tok;
 		count++;
-		cmd_args = (char**)realloc(cmd_args, 2*(count + 1)* sizeof(char*));
-		cmd_args[count - 1] = curr_tok;
 		//printf("%s\n", curr_tok);
 		//printf("%ld\n", sizeof(curr_tok));
 
 		
 	}
+	////Problem with longer commands realloc();
 
 	//printf("%d\n", count);
-	for (int i = 0; i < count; i++)
+	/*for (int i = 0; i < count; i++)
 	{
 		printf("%s\n", cmd_args[i]);
 	}
+	*/
 	
-	printf("First:%s\n", cmd_args[0]);
+	//printf("Second:%s\n", cmd_args[1]);
 	
-
+	return cmd_args;
 }
 
 
 int main()
 {
-	write(STDOUT_FILENO, "$ ", 2);
 
 	char *buff = malloc(500 * sizeof(char));
 
 	while(1)
 	{
+		write(STDOUT_FILENO, "$ ", 2);
+
 		int bytesRead = read(STDIN_FILENO, buff, 500);
 		if(bytesRead == 0)
 		{
@@ -73,7 +76,16 @@ int main()
 
 
 		char **cmd_args = parse_cmdline(buff);
+
+		/*for (int i = 0; i < 3; i++)
+		{
+			printf("%s\n", cmd_args[i]);
+		}
+		*/
+
 	}
+
+
 	
 	return 0;
 	
