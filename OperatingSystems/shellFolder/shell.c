@@ -24,6 +24,7 @@ char **parse_cmdline( const char *cmdline)
 	cmd_args[0] = curr_tok;
 	int count = 1;
 
+	//printf("%ld\n", sizeof(char*));
 	while(1)
 	{
 		curr_tok = strtok(NULL, " ");
@@ -32,20 +33,22 @@ char **parse_cmdline( const char *cmdline)
 			break;
 		}
 		count++;
-		cmd_args = (char**)realloc(cmd_args, (count + 1)*sizeof(char*));
-		cmd_args[count] = curr_tok;
+		cmd_args = (char**)realloc(cmd_args, 2*(count + 1)* sizeof(char*));
+		cmd_args[count - 1] = curr_tok;
 		//printf("%s\n", curr_tok);
+		//printf("%ld\n", sizeof(curr_tok));
+
 		
 	}
 
-		printf("%d\n", count);
-	/*for (int i = 0; i < count; i++)
+	//printf("%d\n", count);
+	for (int i = 0; i < count; i++)
 	{
 		printf("%s\n", cmd_args[i]);
 	}
-	*/
+	
 	printf("First:%s\n", cmd_args[0]);
-
+	
 
 }
 
