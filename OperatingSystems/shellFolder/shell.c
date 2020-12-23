@@ -12,29 +12,40 @@
 
 char **parse_cmdline( const char *cmdline)
 {
-	char *temp_cmd_line = malloc(sizeof(cmdline)*sizeof(char));
+	char *temp_cmd_line = (char*)malloc(sizeof(cmdline)*sizeof(char));
 	strcpy(temp_cmd_line, cmdline);
 	//printf("%ld\n", strlen(temp_cmd_line));
 	//printf("%ld\n", strlen(cmdline));
 	//printf("%s\n", temp_cmd_line);
 
-	char **cmd_args = malloc(sizeof(char*));
+	char **cmd_args = (char**)malloc(sizeof(char*)*1);
 
 	char *curr_tok = strtok(temp_cmd_line, " ");
-	//cmd_args[0] = curr_tok;
-	int count = 0;
+	cmd_args[0] = curr_tok;
+	int count = 1;
 
-	while(curr_tok != NULL)
+	while(1)
 	{
-		cmd_args[count] = curr_tok;
-		count++;
 		curr_tok = strtok(NULL, " ");
+		if(curr_tok == NULL)
+		{
+			break;
+		}
+		count++;
+		cmd_args = (char**)realloc(cmd_args, (count + 1)*sizeof(char*));
+		cmd_args[count] = curr_tok;
+		//printf("%s\n", curr_tok);
+		
 	}
 
-	for (int i = 0; i < count; i++)
+		printf("%d\n", count);
+	/*for (int i = 0; i < count; i++)
 	{
 		printf("%s\n", cmd_args[i]);
 	}
+	*/
+	printf("First:%s\n", cmd_args[0]);
+
 
 }
 
