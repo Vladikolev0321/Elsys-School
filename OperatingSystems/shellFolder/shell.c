@@ -49,12 +49,12 @@ char **parse_cmdline( const char *cmdline)
 	//// not strtok
 
 
-	/*printf("%d\n", count);
+	printf("%d\n", count);
 	for (int i = 0; i < count; i++)
 	{
 		printf("%s\n", cmd_args[i]);
 	}
-	*/
+	
 	
 	
 	//printf("Second:%s\n", cmd_args[1]);
@@ -92,26 +92,31 @@ void run_command(const char *file_name, char **cmd_args)
 int main()
 {
 
-	char *buff = malloc(500 * sizeof(char));
+	//char *buff = malloc(500 * sizeof(char));
+	char *buff = NULL;
+	size_t length = 0;
 	/////Try reading with getline
 	while(1)
 	{
 		write(STDOUT_FILENO, "$ ", 2);
 
-		int bytesRead = read(STDIN_FILENO, buff, 500);
+		//int bytesRead = read(STDIN_FILENO, buff, 500);
+		int bytesRead = getline(&buff, &length, stdin);
 		if(bytesRead == 0)
 		{
 			break;
+			//continue;
 		}
 		else if(bytesRead == -1)
 		{
 			perror("Reading");
+			break;
 		}
 
 
 		char **cmd_args = parse_cmdline(buff);
 
-		run_command(cmd_args[0], cmd_args);
+		//run_command(cmd_args[0], cmd_args);
 		/*for (int i = 0; i < 3; i++)
 		{
 			printf("%s\n", cmd_args[i]);
