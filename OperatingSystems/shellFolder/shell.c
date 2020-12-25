@@ -60,9 +60,10 @@ char **parse_cmdline( const char *cmdline)
 	*/
 	
 	
+	///////It is displaying the new line after command
 	
-	
-	//printf("Second:%s\n", cmd_args[1]);
+	//printf("first:%s", cmd_args[0]);
+	//printf("%ld\n", strlen(cmd_args[0]));
 	
 	return cmd_args;
 }
@@ -117,8 +118,10 @@ int main()
 			continue;
 		}
 
-
-		char **cmd_args = parse_cmdline(buff);
+		char *buff_without_new_line = malloc(strlen(buff) - 1);
+		memcpy(buff_without_new_line, buff, strlen(buff) - 1);
+		//printf("%ld\n", strlen(buff));
+		char **cmd_args = parse_cmdline(buff_without_new_line);
 
 		run_command(cmd_args[0], cmd_args);
 		/*for (int i = 0; i < 1; i++)
