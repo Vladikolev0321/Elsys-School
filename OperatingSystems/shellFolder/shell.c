@@ -74,12 +74,14 @@ void run_command(const char *file_name, char **cmd_args)
 	if(pid < 0)
 	{
 		perror("fork");
+		exit(pid);
 	}
 	else if(pid == 0)
 	{
 		if(execv(file_name, cmd_args) == -1)
 		{
 			perror(file_name);
+			exit(pid);
 		}
 		exit(pid);
 	}
@@ -117,11 +119,20 @@ int main()
 			perror("Reading");
 			continue;
 		}
+		/*int size = strlen(buff);
+		char *buff_without_new_line = malloc(size - 1);
+		memcpy(buff_without_new_line, buff, size - 1);
+		*/
+		char *buff_without_new_line = malloc(bytesRead*sizeof(char));
+		memcpy(buff_without_new_line, buff, bytesRead - 1);
+		buff_without_new_line[bytesRead-1] = '\0';
 
-		char *buff_without_new_line = malloc(strlen(buff) - 1);
-		memcpy(buff_without_new_line, buff, strlen(buff) - 1);
 		//printf("%ld\n", strlen(buff));
-		char **cmd_args = parse_cmdline(buff_without_new_line);
+	
+		/*printf("%d\n", bytesRead);
+		printf("%ld\n", strlen(buff));
+		printf("%ld\n", strlen(buff_without_new_line));
+		*/char **cmd_args = parse_cmdline(buff_without_new_line);
 
 		run_command(cmd_args[0], cmd_args);
 		/*for (int i = 0; i < 1; i++)
@@ -132,7 +143,7 @@ int main()
 		
 		free(cmd_args);
 		free(buff);
-		//////free buffer
+		free(buff_without_new_line);
 	}
 
 
