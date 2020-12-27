@@ -60,12 +60,23 @@ char **parse_cmdline( const char *cmdline)
 	*/
 	
 	
+	
+	
+	
 	///////It is displaying the new line after command
 	
 	//printf("first:%s", cmd_args[0]);
 	//printf("%ld\n", strlen(cmd_args[0]));
 	
 	return cmd_args;
+}
+void free_memory(char **cmd_args)
+{
+	for (int i = 0; cmd_args[i] != NULL; i++)
+	{
+		free(cmd_args[i]);
+	}
+	free(cmd_args);
 }
 void run_command(const char *file_name, char **cmd_args)
 {
@@ -74,6 +85,9 @@ void run_command(const char *file_name, char **cmd_args)
 	if(pid < 0)
 	{
 		perror("fork");
+		//
+		//free_memory(cmd_args);
+		//free(file_name);
 		exit(pid);
 	}
 	else if(pid == 0)
@@ -81,7 +95,9 @@ void run_command(const char *file_name, char **cmd_args)
 		if(execv(file_name, cmd_args) == -1)
 		{
 			perror(file_name);
-			exit(pid);
+			//
+			//free_memory(cmd_args);
+			//free(file_name);
 		}
 		exit(pid);
 	}
@@ -91,11 +107,15 @@ void run_command(const char *file_name, char **cmd_args)
 		if(waitpid(pid, &status, 0) == -1)
 		{
 			perror("wait");
+			//
+			//free_memory(cmd_args);
+			//free(file_name);
 		}
 	}
 	////////Should i add NULL at the end of 2nd arg
 	/// of execv
 }
+
 
 int main()
 {
@@ -105,34 +125,54 @@ int main()
 	while(1)
 	{
 		char *buff = malloc(500 * sizeof(char));
+		//char buff[501];
+
 
 		write(STDOUT_FILENO, "$ ", 2);
 
 		int bytesRead = read(STDIN_FILENO, buff, 500);
-		/*if(bytesRead == 0)
+		if(bytesRead == 0)
 		{
 			break;
 		}
-		*/
 		if(bytesRead == -1)
 		{
 			perror("Reading");
+			//free(buff)
+			//free_memory(cmd_args);
+			//free(buff);
+			//free(buff_without_new_line);
 			continue;
 		}
 		/*int size = strlen(buff);
 		char *buff_without_new_line = malloc(size - 1);
 		memcpy(buff_without_new_line, buff, size - 1);
 		*/
+		int lenght;
+		for (int i = 0; i < bytesRead; i++)
+		{
+			if(buff[i] == '\n')
+			{
+				lenght = i;
+			}
+		}
+
+		char *buff_without_new_line = malloc((lenght+1)*sizeof(char));
+		memcpy(buff_without_new_line, buff, lenght);
+		buff_without_new_line[lenght] = '\0';
+
+		/*
 		char *buff_without_new_line = malloc(bytesRead*sizeof(char));
 		memcpy(buff_without_new_line, buff, bytesRead - 1);
 		buff_without_new_line[bytesRead-1] = '\0';
-
+		*/
 		//printf("%ld\n", strlen(buff));
-	
+		
 		/*printf("%d\n", bytesRead);
 		printf("%ld\n", strlen(buff));
 		printf("%ld\n", strlen(buff_without_new_line));
-		*/char **cmd_args = parse_cmdline(buff_without_new_line);
+		*/
+		char **cmd_args = parse_cmdline(buff_without_new_line);
 
 		run_command(cmd_args[0], cmd_args);
 		/*for (int i = 0; i < 1; i++)
@@ -140,7 +180,10 @@ int main()
 			printf("El[%d]%s\n", i,cmd_args[i]);
 		}
 		*/
+		////////Check if \n if not continue;
+		//////Check for \n in buffer make string to \n
 		
+		//free_memory(cmd_args);
 		free(cmd_args);
 		free(buff);
 		free(buff_without_new_line);
