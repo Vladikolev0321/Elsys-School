@@ -55,9 +55,10 @@ char **parse_cmdline( const char *cmdline)
 	/*printf("%d\n", count);
 	for (int i = 0; i < count; i++)
 	{
-		printf("%s ", cmd_args[i]);
+		printf("%s\n", cmd_args[i]);
 	}
 	*/
+	
 	
 	
 	
@@ -130,25 +131,28 @@ int main()
 
 		write(STDOUT_FILENO, "$ ", 2);
 
-		int bytesRead = read(STDIN_FILENO, buff, 500);
+		size_t size = 500;
+		//int bytesRead = read(STDIN_FILENO, buff, 500);
+		int bytesRead = getline(&buff, &size, stdin);
+
 		if(bytesRead == 0)
 		{
 			break;
 		}
 		if(bytesRead == -1)
 		{
-			perror("Reading");
+			//perror("Reading");
 			//free(buff)
 			//free_memory(cmd_args);
 			//free(buff);
 			//free(buff_without_new_line);
-			continue;
+			break;
 		}
 		/*int size = strlen(buff);
 		char *buff_without_new_line = malloc(size - 1);
 		memcpy(buff_without_new_line, buff, size - 1);
 		*/
-		int lenght;
+		/*int lenght;
 		for (int i = 0; i < bytesRead; i++)
 		{
 			if(buff[i] == '\n')
@@ -156,16 +160,17 @@ int main()
 				lenght = i;
 			}
 		}
-
+		*/
+		/*
 		char *buff_without_new_line = malloc((lenght+1)*sizeof(char));
 		memcpy(buff_without_new_line, buff, lenght);
 		buff_without_new_line[lenght] = '\0';
-
-		/*
+		*/
+		
 		char *buff_without_new_line = malloc(bytesRead*sizeof(char));
 		memcpy(buff_without_new_line, buff, bytesRead - 1);
 		buff_without_new_line[bytesRead-1] = '\0';
-		*/
+		
 		//printf("%ld\n", strlen(buff));
 		
 		/*printf("%d\n", bytesRead);
