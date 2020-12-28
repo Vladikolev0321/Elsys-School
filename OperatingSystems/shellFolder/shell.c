@@ -11,7 +11,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-char **parse_cmdline2( const char *cmdline )
+// FUNCTION: char **parse_cmdline
+// parses the given string cmdline into an array of strings by " " 
+//and returns the new array
+// PARAMETERS:const char *cmdline - this is the given string
+char **parse_cmdline( const char *cmdline )
 {
 	int lenght = strlen(cmdline);
 
@@ -51,21 +55,20 @@ char **parse_cmdline2( const char *cmdline )
 	cmd_args[arg_index] = curr_tok;
 	cmd_args[arg_index + 1] = NULL;
 
-	printf("%d\n", count_args);
+	/*printf("%d\n", count_args);
 	for (int i = 0; i < count_args; i++)
 	{
 		printf("%s\n", cmd_args[i]);
 	}
-	
-	
-	
+	*/
+
 
 	return cmd_args;
 }
 
 
 
-char **parse_cmdline( const char *cmdline)
+/*char **parse_cmdline2( const char *cmdline)
 {
 
 	char *temp_cmd_line = (char*)malloc((strlen(cmdline)+1)*sizeof(char));
@@ -77,14 +80,6 @@ char **parse_cmdline( const char *cmdline)
 	cmd_args[0] = curr_tok;
 	int count = 1;
 
-	/*
-	int lenght = strlen(cmdline);
-	char *curr_tok = malloc(lenght);
-	strcpy(curr_tok, strtok(temp_cmd_line, " "));
-	//curr_tok = strtok(temp_cmd_line, " ");
-	cmd_args[0] = curr_tok;
-	int count = 1;
-	*/
 	
 	////Count segm
 	////Allocate space 
@@ -98,6 +93,7 @@ char **parse_cmdline( const char *cmdline)
 			break;
 		}
 		cmd_args = (char**)realloc(cmd_args, (count+1) * sizeof(char*));
+		//cmd_args[count] = (char*)malloc((strlen(cmdline)+1) * sizeof(char));
 		cmd_args[count] = curr_tok;
 		count++;
 		//printf("%s\n", curr_tok);
@@ -110,12 +106,12 @@ char **parse_cmdline( const char *cmdline)
 
 
 
-	/*printf("%d\n", count);
-	for (int i = 0; i < count; i++)
-	{
-		printf("%s\n", cmd_args[i]);
-	}
-	*/
+	//printf("%d\n", count);
+	//for (int i = 0; i < count; i++)
+	//{
+	//	printf("%s\n", cmd_args[i]);
+	//}
+	
 	
 	//printf("first:%s", cmd_args[0]);
 	//printf("%ld\n", strlen(cmd_args[0]));
@@ -123,7 +119,10 @@ char **parse_cmdline( const char *cmdline)
 	//free(temp_cmd_line);
 	return cmd_args;
 }
-
+*/
+// FUNCTION: void free_memory
+//frees the memory used by the array of strings cmd_args
+// PARAMETERS:char **cmd_args - the array of strings to be freed
 void free_memory(char **cmd_args)
 {
 	for (int i = 0; cmd_args[i] != NULL; i++)
@@ -133,6 +132,12 @@ void free_memory(char **cmd_args)
 		free(cmd_args);
 }
 
+// FUNCTION: void run_command
+// creates a process and tries to execute the command
+// PARAMETERS: const char *file_name - the path of file used in
+//first parameter of execv
+// char **cmd_args - array of arguments used in the second parameter
+//of execv
 void run_command(const char *file_name, char **cmd_args)
 {
 	pid_t pid = fork();
@@ -172,7 +177,8 @@ void run_command(const char *file_name, char **cmd_args)
 		}
 	}
 }
-
+// FUNCTION: int main
+// reads from the standart input using getline
 int main()
 {
 
@@ -185,7 +191,7 @@ int main()
 		size_t size = 500;
 		//int bytesRead = read(STDIN_FILENO, buff, 500);
 		int bytesRead = getline(&buff, &size, stdin);
-
+		/////return type getline
 		if(bytesRead == 0)
 		{
 			free(buff);
@@ -195,10 +201,6 @@ int main()
 		{
 			free(buff);
 			//perror("Reading");
-			//free(buff)
-			//free_memory(cmd_args);
-			//free(buff);
-			//free(buff_without_new_line);
 			break;
 		}
 
@@ -207,38 +209,7 @@ int main()
 				free(buff);
 				continue;
 		}
-		/*int size = strlen(buff);
-		char *buff_without_new_line = malloc(size - 1);
-		memcpy(buff_without_new_line, buff, size - 1);
-		*/
-		/*int lenght;
-		for (int i = 0; i < bytesRead; i++)
-		{
-			if(buff[i] == '\n')
-			{
-				lenght = i;
-			}
-		}
-		*/
-		
-		/*char *buff_without_new_line = malloc((lenght+1)*sizeof(char));
-		memcpy(buff_without_new_line, buff, lenght);
-		buff_without_new_line[lenght] = '\0';
-		*/
-		//printf("%d\n", bytesRead);
-			
-			/*char *buff_without_new_line;
-			 if(buff_without_new_line[bytesRead-1] != '\n')
-			{
-				/*buff_without_new_line = malloc(bytesRead*sizeof(char));
-				memcpy(buff_without_new_line, buff, bytesRead);
-
-				buff_without_new_line[bytesRead] = '\0';
-				*/
-			//	continue;
-			//}
-		//	else
-		//	{
+	
 				char *buff_without_new_line;
 				if(buff[bytesRead-1] != '\n')
 				{
@@ -254,16 +225,11 @@ int main()
 					buff_without_new_line[bytesRead-1] = '\0';
 				}
 
-
-				//buff_without_new_line[bytesRead-1] = '\0';
-
-		//	}	
-
 			
 
 
 
-			char **cmd_args = parse_cmdline2(buff_without_new_line);
+			char **cmd_args = parse_cmdline(buff_without_new_line);
 
 			free(buff);
 			free(buff_without_new_line);
@@ -273,20 +239,8 @@ int main()
 			{
 			printf("El[%d]%s\n", i,cmd_args[i]);
 			}
-		
-		
-			///Check f
-			//free_memory(cmd_args);
-			//free(cmd_args);
-
-			/*int counter = 0;
-			while(cmd_args[counter] != NULL)
-			{
-			//free(cmd_args[i]);
-			counter++;
-			}
 			*/
-			///free char** 
+
 		
 			free_memory(cmd_args);
 		
