@@ -15,6 +15,7 @@
 // parses the given string cmdline into an array of strings by " " 
 //and returns the new array
 // PARAMETERS:const char *cmdline - this is the given string
+
 char **parse_cmdline( const char *cmdline )
 {
 	int lenght = strlen(cmdline);
@@ -27,88 +28,16 @@ char **parse_cmdline( const char *cmdline )
 			count_args++;
 		}
 	}
-	/*
-	int first_el_lenght;
-	for (int i = 0; i < lenght; i++)
-	{
-		if(cmdline[i] == ' ')
-		{
-			first_el_lenght = i;
-			break;
-		}
-		else if(i + 1 == lenght)
-		{
-			first_el_lenght = lenght;
-		}
-	}
-	*/
-
 
 	char **cmd_args = (char **) malloc((count_args+1) * sizeof(char *));
 
-	int previous_space_index = 0;
+	int counter = 0;
 	int arg_index = 0;
-
-
-	char *curr_tok = (char *) malloc((lenght+1) * sizeof(char));
-	int counter = 0;
-	while(counter < lenght)
-	{
-		if(cmdline[counter] == ' ')
-		{
-			curr_tok[counter - previous_space_index] = '\0';
-			cmd_args[arg_index] = curr_tok;
-			previous_space_index = counter + 1;
-			curr_tok = (char *) malloc((lenght+1) * sizeof(char));
-			arg_index++;
-		}
-		else
-		{
-			curr_tok[counter - previous_space_index] = cmdline[counter];
-		}
-		counter++;				
-	}
-	curr_tok[counter - previous_space_index] = '\0';
-	cmd_args[arg_index] = curr_tok;
-	cmd_args[count_args] = NULL;
-	//cmd_args[arg_index + 1] = NULL;
-
-	/*printf("%d\n", count_args);
-	for (int i = 0; i < count_args; i++)
-	{
-		printf("%s\n", cmd_args[i]);
-	}
-	*/
-
-
-
-	return cmd_args;
-}
-char **parse_cmdline2( const char *cmdline )
-{
-	int lenght = strlen(cmdline);
-
-	int count_args = 1;
-	for(int i = 0; i < lenght; i++)
-	{
-		if(cmdline[i] == ' ')
-		{
-			count_args++;
-		}
-	}
-
-
-	char **cmd_args = (char **) malloc((count_args+1) * sizeof(char *));
-
-	//int previous_space_index = 0;
-
-
-	int counter = 0;
-	for (int arg_index = 0; arg_index < count_args; arg_index++)
+	while(arg_index < count_args)
 	{	
 		char *curr_tok = (char *) malloc(sizeof(char) * 1);
 		int curr_tok_size = 1;
-		while(counter < lenght+1)///+1
+		while(counter < lenght+1)///To set last elem of last argument '\0'
 		{
 			if(cmdline[counter] == ' ' || cmdline[counter] == '\0')
 			{
@@ -116,19 +45,20 @@ char **parse_cmdline2( const char *cmdline )
 				counter++;
 				break;
 			}
-			curr_tok[curr_tok_size-1] = cmdline[counter];
-			curr_tok_size++;
-			curr_tok = (char*)realloc(curr_tok, curr_tok_size*sizeof(char));
-			counter++;
+			else
+			{
+				curr_tok[curr_tok_size-1] = cmdline[counter];
+				curr_tok_size++;
+				curr_tok = (char*)realloc(curr_tok, curr_tok_size*sizeof(char));
+				counter++;	
+			}
 		}
 		cmd_args[arg_index] = malloc((strlen(curr_tok)+1)* sizeof(char));
 		strcpy(cmd_args[arg_index], curr_tok);
 		free(curr_tok);
-
+		arg_index++;
 	}
 	cmd_args[count_args] = NULL;
-
-	//cmd_args[arg_index + 1] = NULL;
 
 	/*printf("%d\n", count_args);
 	for (int i = 0; i < count_args; i++)
@@ -136,8 +66,6 @@ char **parse_cmdline2( const char *cmdline )
 		printf("%s\n", cmd_args[i]);
 	}
 	*/
-
-
 
 	return cmd_args;
 }
@@ -221,8 +149,7 @@ void run_command(const char *file_name, char **cmd_args)
 	{
 		perror("fork");
 		//
-		//free_memory(cmd_args);
-		//write(STDOUT_FILENO, "\n", 2);
+		free_memory(cmd_args);
 		//free(file_name);
 		//exit(pid);
 	}
@@ -233,7 +160,6 @@ void run_command(const char *file_name, char **cmd_args)
 			perror(file_name);
 			free_memory(cmd_args);
 
-			//
 			//free_memory(cmd_args);
 			//free(file_name);
 		}
@@ -255,6 +181,7 @@ void run_command(const char *file_name, char **cmd_args)
 }
 // FUNCTION: int main
 // reads from the standart input using getline
+// and invokes the other functions 
 int main()
 {
 
@@ -270,7 +197,6 @@ int main()
 		size_t size = 500;
 		//int bytesRead = read(STDIN_FILENO, buff, 500);
 		int bytesRead = getline(&buff, &size, stdin);
-		/////return type getline
 		if(bytesRead == 0)
 		{
 			free(buff);
@@ -308,7 +234,7 @@ int main()
 
 
 
-			char **cmd_args = parse_cmdline2(buff_without_new_line);
+			char **cmd_args = parse_cmdline(buff_without_new_line);
 
 			free(buff);
 			free(buff_without_new_line);
