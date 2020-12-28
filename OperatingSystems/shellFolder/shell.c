@@ -11,17 +11,65 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+char **parse_cmdline2( const char *cmdline )
+{
+	int lenght = strlen(cmdline);
+
+	int count_args = 1;
+	for(int i = 0; i < lenght; i++)
+	{
+		if(cmdline[i] == ' ')
+		{
+			count_args++;
+		}
+	}
+	char **cmd_args = (char **) malloc((count_args+1) * sizeof(char *));
+
+	int previous_space_index = 0;
+	int arg_index = 0;
+
+
+	char *curr_tok = (char *) malloc((lenght+1) * sizeof(char));
+	int counter = 0;
+	while(counter < lenght)
+	{
+		if(cmdline[counter] == ' ')
+		{
+			curr_tok[counter - previous_space_index] = '\0';
+			cmd_args[arg_index] = curr_tok;
+			previous_space_index = counter + 1;
+			curr_tok = (char *) malloc((lenght+1) * sizeof(char));
+			arg_index++;
+		}
+		else
+		{
+			curr_tok[counter - previous_space_index] = cmdline[counter];
+		}
+		counter++;				
+	}
+	curr_tok[counter - previous_space_index] = '\0';
+	cmd_args[arg_index] = curr_tok;
+	cmd_args[arg_index + 1] = NULL;
+
+	printf("%d\n", count_args);
+	for (int i = 0; i < count_args; i++)
+	{
+		printf("%s\n", cmd_args[i]);
+	}
+	
+	
+	
+
+	return cmd_args;
+}
+
+
 
 char **parse_cmdline( const char *cmdline)
 {
-	//printf("Sizof:%ld\n", sizeof(cmdline));
-	//printf("Strlen:%ld\n", strlen(cmdline));
 
-	char *temp_cmd_line = (char*)malloc(strlen(cmdline)*sizeof(char));
+	char *temp_cmd_line = (char*)malloc((strlen(cmdline)+1)*sizeof(char));
 	strcpy(temp_cmd_line, cmdline);
-	//printf("%ld\n", strlen(temp_cmd_line));
-	//printf("%ld\n", strlen(cmdline));
-	//printf("%s\n", temp_cmd_line);
 
 	char **cmd_args = (char**)malloc(sizeof(char*)*1);
 
@@ -29,7 +77,19 @@ char **parse_cmdline( const char *cmdline)
 	cmd_args[0] = curr_tok;
 	int count = 1;
 
-	//printf("%ld\n", sizeof(char*));
+	/*
+	int lenght = strlen(cmdline);
+	char *curr_tok = malloc(lenght);
+	strcpy(curr_tok, strtok(temp_cmd_line, " "));
+	//curr_tok = strtok(temp_cmd_line, " ");
+	cmd_args[0] = curr_tok;
+	int count = 1;
+	*/
+	
+	////Count segm
+	////Allocate space 
+	///
+
 	while(1)
 	{
 		curr_tok = strtok(NULL, " ");
@@ -47,9 +107,7 @@ char **parse_cmdline( const char *cmdline)
 
 	cmd_args = (char**)realloc(cmd_args, (count+1) * sizeof(char*));
 	cmd_args[count] = NULL;
-	////Problem with longer commands realloc();
-	////Should do the parsing part with getline maybe
-	//// not strtok
+
 
 
 	/*printf("%d\n", count);
@@ -59,26 +117,22 @@ char **parse_cmdline( const char *cmdline)
 	}
 	*/
 	
-	
-	
-	
-	
-	
-	///////It is displaying the new line after command
-	
 	//printf("first:%s", cmd_args[0]);
 	//printf("%ld\n", strlen(cmd_args[0]));
-	
+	//temp_cmd_line = NULL;
+	//free(temp_cmd_line);
 	return cmd_args;
 }
+
 void free_memory(char **cmd_args)
 {
 	for (int i = 0; cmd_args[i] != NULL; i++)
-	{
-		free(cmd_args[i]);
-	}
-	free(cmd_args);
+		{
+			free(cmd_args[i]);
+		}
+		free(cmd_args);
 }
+
 void run_command(const char *file_name, char **cmd_args)
 {
 	pid_t pid = fork();
@@ -87,7 +141,7 @@ void run_command(const char *file_name, char **cmd_args)
 	{
 		perror("fork");
 		//
-		//free_memory(cmd_args);
+		free_memory(cmd_args);
 		//free(file_name);
 		exit(pid);
 	}
@@ -96,6 +150,8 @@ void run_command(const char *file_name, char **cmd_args)
 		if(execv(file_name, cmd_args) == -1)
 		{
 			perror(file_name);
+			free_memory(cmd_args);
+
 			//
 			//free_memory(cmd_args);
 			//free(file_name);
@@ -108,26 +164,21 @@ void run_command(const char *file_name, char **cmd_args)
 		if(waitpid(pid, &status, 0) == -1)
 		{
 			perror("wait");
+			free_memory(cmd_args);
+
 			//
 			//free_memory(cmd_args);
 			//free(file_name);
 		}
 	}
-	////////Should i add NULL at the end of 2nd arg
-	/// of execv
 }
-
 
 int main()
 {
 
-	
-	/////Try reading with getline
 	while(1)
 	{
 		char *buff = malloc(500 * sizeof(char));
-		//char buff[501];
-
 
 		write(STDOUT_FILENO, "$ ", 2);
 
@@ -137,16 +188,24 @@ int main()
 
 		if(bytesRead == 0)
 		{
+			free(buff);
 			break;
 		}
 		if(bytesRead == -1)
 		{
+			free(buff);
 			//perror("Reading");
 			//free(buff)
 			//free_memory(cmd_args);
 			//free(buff);
 			//free(buff_without_new_line);
 			break;
+		}
+
+		if(buff[0] == '\n')
+		{
+				free(buff);
+				continue;
 		}
 		/*int size = strlen(buff);
 		char *buff_without_new_line = malloc(size - 1);
@@ -161,37 +220,79 @@ int main()
 			}
 		}
 		*/
-		/*
-		char *buff_without_new_line = malloc((lenght+1)*sizeof(char));
+		
+		/*char *buff_without_new_line = malloc((lenght+1)*sizeof(char));
 		memcpy(buff_without_new_line, buff, lenght);
 		buff_without_new_line[lenght] = '\0';
 		*/
-		
-		char *buff_without_new_line = malloc(bytesRead*sizeof(char));
-		memcpy(buff_without_new_line, buff, bytesRead - 1);
-		buff_without_new_line[bytesRead-1] = '\0';
-		
-		//printf("%ld\n", strlen(buff));
-		
-		/*printf("%d\n", bytesRead);
-		printf("%ld\n", strlen(buff));
-		printf("%ld\n", strlen(buff_without_new_line));
-		*/
-		char **cmd_args = parse_cmdline(buff_without_new_line);
+		//printf("%d\n", bytesRead);
+			
+			/*char *buff_without_new_line;
+			 if(buff_without_new_line[bytesRead-1] != '\n')
+			{
+				/*buff_without_new_line = malloc(bytesRead*sizeof(char));
+				memcpy(buff_without_new_line, buff, bytesRead);
 
-		run_command(cmd_args[0], cmd_args);
-		/*for (int i = 0; i < 1; i++)
-		{
+				buff_without_new_line[bytesRead] = '\0';
+				*/
+			//	continue;
+			//}
+		//	else
+		//	{
+				char *buff_without_new_line;
+				if(buff[bytesRead-1] != '\n')
+				{
+					buff_without_new_line = malloc((bytesRead+1)*sizeof(char));
+					memcpy(buff_without_new_line, buff, bytesRead);
+					//printf("%s\n", buff_without_new_line);
+					buff_without_new_line[bytesRead] = '\0';
+				}
+				else
+				{
+					buff_without_new_line = malloc(bytesRead*sizeof(char));
+					memcpy(buff_without_new_line, buff, bytesRead-1);
+					buff_without_new_line[bytesRead-1] = '\0';
+				}
+
+
+				//buff_without_new_line[bytesRead-1] = '\0';
+
+		//	}	
+
+			
+
+
+
+			char **cmd_args = parse_cmdline2(buff_without_new_line);
+
+			free(buff);
+			free(buff_without_new_line);
+
+			run_command(cmd_args[0], cmd_args);
+			/*for (int i = 0; i < 1; i++)
+			{
 			printf("El[%d]%s\n", i,cmd_args[i]);
-		}
-		*/
-		////////Check if \n if not continue;
-		//////Check for \n in buffer make string to \n
+			}
 		
-		//free_memory(cmd_args);
-		free(cmd_args);
-		free(buff);
-		free(buff_without_new_line);
+		
+			///Check f
+			//free_memory(cmd_args);
+			//free(cmd_args);
+
+			/*int counter = 0;
+			while(cmd_args[counter] != NULL)
+			{
+			//free(cmd_args[i]);
+			counter++;
+			}
+			*/
+			///free char** 
+		
+			free_memory(cmd_args);
+		
+		
+		
+		
 	}
 
 
