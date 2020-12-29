@@ -33,39 +33,57 @@ char **parse_cmdline( const char *cmdline )
 
 	int counter = 0;
 	int arg_index = 0;
-	while(arg_index < count_args)
-	{	
-		char *curr_tok = (char *) malloc(sizeof(char) * 1);
-		int curr_tok_size = 1;
-		while(counter < lenght+1)///To set last elem of last argument '\0'
+	char *curr_tok;
+	int curr_tok_size = 0;
+	int was_space = 0;
+	while(counter < lenght+1)
+	{
+		if((cmdline[counter] == ' ' || cmdline[counter] == '\0') && was_space == 0)
 		{
-			if(cmdline[counter] == ' ' || cmdline[counter] == '\0')
+			curr_tok[curr_tok_size] = '\0';
+			cmd_args[arg_index] = malloc((strlen(curr_tok)+1)* sizeof(char));
+			strcpy(cmd_args[arg_index], curr_tok);
+			free(curr_tok);
+			arg_index++;
+			curr_tok_size = 0;
+			if(cmdline[counter] == ' ')
 			{
-				curr_tok[curr_tok_size-1] = '\0';
-				counter++;
-				break;
+				was_space = 1;
+			}
+		}
+		else
+		{
+			if(cmdline[counter] == ' ' && cmdline[counter+1] == ' ')
+			{
+				was_space = 1;
 			}
 			else
 			{
-				curr_tok[curr_tok_size-1] = cmdline[counter];
-				curr_tok_size++;
-				curr_tok = (char*)realloc(curr_tok, curr_tok_size*sizeof(char));
-				counter++;	
+				was_space = 0;
 			}
+			if(counter != lenght)
+			{
+				if(curr_tok_size == 0)
+				{
+					curr_tok = (char *) malloc(sizeof(char) * 1);
+				}
+				curr_tok[curr_tok_size] = cmdline[counter];
+				curr_tok_size++;
+				curr_tok = (char*)realloc(curr_tok, (curr_tok_size+1)*sizeof(char));
+			}
+			
 		}
-		cmd_args[arg_index] = malloc((strlen(curr_tok)+1)* sizeof(char));
-		strcpy(cmd_args[arg_index], curr_tok);
-		free(curr_tok);
-		arg_index++;
+		counter++;
 	}
 	cmd_args[count_args] = NULL;
 
-	/*printf("%d\n", count_args);
-	for (int i = 0; i < count_args; i++)
+	/*printf("%d\n", arg_index);
+	for (int i = 0; i < arg_index; i++)
 	{
-		printf("%s\n", cmd_args[i]);
+		printf("%s:%ld\n", cmd_args[i], strlen(cmd_args[i]));
 	}
 	*/
+	
 
 	return cmd_args;
 }
@@ -162,6 +180,7 @@ void run_command(const char *file_name, char **cmd_args)
 
 			//free_memory(cmd_args);
 			//free(file_name);
+			exit(-1);
 		}
 		exit(pid);
 	}
