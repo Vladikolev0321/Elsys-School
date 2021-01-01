@@ -16,6 +16,7 @@ public:
 		this->y = y;
 	}
 };
+///To add Ball class
 class Table
 {
 	list<Point> points;
@@ -38,8 +39,8 @@ public:
 			cout << curr_point.x << ',' << curr_point.y <<endl;
 		}
 	}
-
 };
+
 void read_from_file(Table &table)
 {
 	string file_name = "proj2.txt";
@@ -69,7 +70,28 @@ void read_from_file(Table &table)
 		table.add_point(curr_point);
 
 	}
-	
+///diameter
+	string line2;
+	getline(istream, line2);
+
+	stringstream S(line2);
+	string diameter_of_ball_as_string;
+	getline(S, diameter_of_ball_as_string, ' ');
+	int diameter = stoi(diameter_of_ball_as_string.c_str());
+
+////coordinates of ball
+	string line3;
+	getline(istream, line3);
+
+	stringstream S(line3);
+
+	string x_as_string;
+	getline(S, x_as_string, ',');
+	int x_coordinate = stoi(x_as_string.c_str());
+
+	string y_as_string;
+	getline(S, y_as_string, ' ');
+	int y_coordinate = stoi(y_as_string.c_str());
 	
 
 	//for()
