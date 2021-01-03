@@ -12,6 +12,7 @@ class Point
 public:
 	int x;
 	int y;
+	Point(){};
 	Point(int x, int y)
 	{
 		this->x = x;
@@ -21,9 +22,9 @@ public:
 ///To add Ball class
 class Table
 {
-	vector<Point> points;
 	int count_points;
 public:
+	vector<Point> points;
 	Table()
 	{
 		count_points = 0;
@@ -107,6 +108,8 @@ class Ball
 	int y;
 	int diameter;
 public:
+	Point direction;
+	float strength;
 	Ball(){};
 	Ball(int x, int y, int diameter)
 	{
@@ -125,6 +128,40 @@ public:
 	int get_diameter()
 	{
 		return diameter;
+	}
+	
+	/////  max and min length of vector W/10 и W*3/10, w - length
+	/////  min sila - 2  min length - 32
+	////   pri pod sila - 2,5 , x length
+	///2/2,5 = 32/x
+	/// (32*2,5)/2 = x
+	//length of vector with given sila x = (podsila*mindulj) / minsila
+	double find_length_of_vector_which_the_ball_will_move(Table table)
+	{
+		double W = sqrt( pow(table.points[1].x - table.points[0].x, 2) + pow(table.points[1].y - table.points[0].y, 2) );
+		//W/10
+		//cout<<W<<endl;
+		double min_length =  W/10;
+		//cout<<min_length<<endl;
+		double length_of_final_vector = (this->strength * min_length) / 2;
+
+		return length_of_final_vector;
+	}
+	double find_length_of_direction_vector()
+	{
+		double length_of_direction_vector = sqrt( pow(direction.x - this->x, 2) + pow(direction.y - this->y, 2) );
+		return length_of_direction_vector; 
+	}
+	void move(Table table)
+	{
+		double koef = find_length_of_direction_vector() / find_length_of_vector_which_the_ball_will_move(table);
+		Point vector_coordinates(direction.x - this->x, direction.y - this->y);
+		Point final_vector_coordinates(koef * vector_coordinates.x, koef * vector_coordinates.y);
+
+		Point final_point(final_vector_coordinates.x+this->x, final_vector_coordinates.y + this->y);
+
+		cout<<final_point.x<<" "<<final_point.y<<endl; 
+		// set x and y of ball to final point coordiantes;
 	}
 
 };
@@ -213,6 +250,9 @@ void write_to_file()
 
 	ostream.close();
 }
+
+
+
 int main()
 {
 	/*
@@ -246,6 +286,22 @@ int main()
 	//Printing table
 	table.print_points();
 
+	//input sila, direction.x direction.y    primer 1: 2     230      110   
+	cout<<"Sila:"<<endl;
+	float strenght;
+	int direction_x, direction_y;
+	cin>>strenght;
+	cin>>direction_x;
+	cin>>direction_y;
+	cout<<strenght<<"|"<<direction_x<<"|"<<direction_y<<endl;
+
+	ball.direction.x = direction_x;
+	ball.direction.y = direction_y;
+	ball.strength = strenght;
+
+	cout<<ball.find_length_of_vector_which_the_ball_will_move(table)<<endl;
+
+	ball.move(table);
 
 	return 0;
 }
