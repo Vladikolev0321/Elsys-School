@@ -35,20 +35,39 @@ public:
 	}
 	void print_points()
 	{
-		for (list<Point>::iterator it = this->points.begin(); it != this->points.end(); it++)
+		for (vector<Point>::iterator it = this->points.begin(); it != this->points.end(); it++)
 		{
 			Point curr_point = *it;
 			cout << curr_point.x << ',' << curr_point.y <<endl;
 		}
 	}
+	void remove_points()
+	{
+		for (int i = 0; i < count_points; i++)
+		{
+			this->points.pop_back();
+		}
+		this->count_points = 0;
+	}
 	int check_if_rectangle()
 	{
-		int first_length = sqrt( pow(points[2].x - points[1].x, 2) + pow(points[2].y - points[1].y, 2);
-		int second_length = sqrt( pow(points[4].x - points[3].x, 2) + pow(points[4].y - points[3].y, 2);
+		int first_length = sqrt( pow(points[1].x - points[0].x, 2) + pow(points[1].y - points[0].y, 2) );
+		int second_length = sqrt( pow(points[2].x - points[3].x, 2) + pow(points[2].y - points[3].y, 2) );
 
-		int first_width = sqrt( pow(points[2].x - points[1].x, 2) + pow(points[2].y - points[1].y, 2);
-		int second_width = sqrt( pow(points[4].x - points[3].x, 2) + pow(points[4].y - points[3].y, 2);
+		int first_width = sqrt( pow(points[2].x - points[1].x, 2) + pow(points[2].y - points[1].y, 2) );
+		int second_width = sqrt( pow(points[3].x - points[0].x, 2) + pow(points[3].y - points[0].y, 2) );
 		
+
+		///1 lenght and 1 width /// 
+		/// ab||ox  ad || oy 2 points width0.y == width1.y width0.x != width1.x
+		// 2 points lenght0.y != lenght3.y lenght0.x == length3.x
+		// after that 
+		// if ab !|| OX ad !||0X
+		// y = ax + b    a-naklon(uglov koef)
+		// a = (b1.y-a0.y)/(b1.x - b0.a) (pri ab)
+		// calculate a for AD
+		// aAB * aAD == -1 => AB perpendik AD
+
 		if(first_length == second_length && first_width == second_width
 		 && first_width * 2 == first_length)
 		{
@@ -56,9 +75,11 @@ public:
 		}
 		else
 		{
+			this->remove_points();
 			return 0;
 		}
-		
+
+		///after that to move the ball
 	}
 };
 class Ball
@@ -191,7 +212,12 @@ int main()
 	Table table;
 	Ball ball;
 	read_from_file(table, ball);
-
+	while (table.check_if_rectangle() != 1)
+	{
+		write_to_file();
+		read_from_file(table, ball);
+	}
+	
 
 	//Printing Ball
 	cout<<ball.get_x()<<endl;
@@ -199,7 +225,7 @@ int main()
 	cout<<ball.get_diameter()<<endl;
 
 	//Printing table
-	//table.print_points();
+	table.print_points();
 
 
 	return 0;
