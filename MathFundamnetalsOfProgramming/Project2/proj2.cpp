@@ -64,14 +64,33 @@ public:
 		// after that 
 		// if ab !|| OX ad !||0X
 		// y = ax + b    a-naklon(uglov koef)
-		// a = (b1.y-a0.y)/(b1.x - b0.a) (pri ab)
+		// a = (b1.y-a0.y)/(b1.x - a0.x) (pri ab)
 		// calculate a for AD
 		// aAB * aAD == -1 => AB perpendik AD
 
 		if(first_length == second_length && first_width == second_width
 		 && first_width * 2 == first_length)
 		{
-			return 1;
+			if(points[0].y == points[1].y && points[0].x != points[1].x
+				&& points[0].y != points[3].y && points[0].x == points[3].x)
+			{
+				return 1;
+			}
+			else
+			{
+				int koef1 = (points[1].y - points[0].y)/(points[1].x - points[0].x);
+				int koef2 = (points[3].y - points[0].y)/(points[3].x - points[0].x);
+
+				if(koef1 * koef2 == -1)
+				{
+					return 1;
+				}
+				else
+				{
+					this->remove_points();
+					return 0;
+				}
+			}
 		}
 		else
 		{
