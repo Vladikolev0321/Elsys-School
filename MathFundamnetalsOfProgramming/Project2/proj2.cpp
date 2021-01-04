@@ -10,10 +10,10 @@ using namespace std;
 class Point
 {
 public:
-	int x;
-	int y;
+	double x;
+	double y;
 	Point(){};
-	Point(int x, int y)
+	Point(double x, double y)
 	{
 		this->x = x;
 		this->y = y;
@@ -104,15 +104,19 @@ public:
 };
 class Ball
 {
-	int x;
-	int y;
-	int diameter;
+	double x;
+	double y;
+	double diameter;
+	double start_x;
+	double start_y;
 public:
 	Point direction;
 	float strength;
 	Ball(){};
-	Ball(int x, int y, int diameter)
+	Ball(double x, double y, double diameter)
 	{
+		this->start_x = x;
+		this->start_y = y;
 		this->x = x;
 		this->y = y;
 		this->diameter = diameter;
@@ -136,7 +140,8 @@ public:
 	///2/2,5 = 32/x
 	/// (32*2,5)/2 = x
 	//length of vector with given sila x = (podsila*mindulj) / minsila
-	double find_length_of_vector_which_the_ball_will_move(Table table)
+
+	/*double find_length_of_vector_which_the_ball_will_move(Table table)
 	{
 		double W = sqrt( pow(table.points[1].x - table.points[0].x, 2) + pow(table.points[1].y - table.points[0].y, 2) );
 		//W/10
@@ -163,6 +168,34 @@ public:
 		cout<<final_point.x<<" "<<final_point.y<<endl; 
 		// set x and y of ball to final point coordiantes;
 	}
+	*/
+	void move(Table table)
+	{
+		////////Change koef
+		double koef = 1 / this->strength;
+
+		//// x1 = (1 - koef) * this->x + koef
+		//// (xt(direction.x) - (1 - koef)*this->x)/ t = x1
+		//// (yt(direction.y) - (1 - koef)*this->y)/ t = y2
+
+		Point final_point(round((direction.x - (1 - koef)*this->x)/ koef) , round((direction.y - (1 - koef)*this->y)/ koef));
+		////TO DO
+		cout<<final_point.x<<" "<<final_point.y<<endl; 
+
+		//// Check if ball hits the corner
+		for(int i = 0; i < table.points.size(); i++)
+		{
+			if(table.points[i].x == final_point.x && table.points[i].y == final_point.y)
+			{	
+				this->x = this->start_x;
+				this->y = this->start_y;
+				return;
+			}
+		}
+		
+
+	}
+
 
 };
 
@@ -184,11 +217,11 @@ void read_from_file(Table &table, Ball &ball)
 	{
 		string curr_num_as_string;
 		getline(S, curr_num_as_string, ',');
-		int curr_num = stoi(curr_num_as_string);
+		double curr_num = atof(curr_num_as_string.c_str());
 
 		string curr_num_as_string2;
 		getline(S, curr_num_as_string2, ' ');
-		int curr_num2 = stoi(curr_num_as_string2);
+		double curr_num2 = atof(curr_num_as_string2.c_str());
 
 		//cout << curr_num << ',' << curr_num2 <<endl;
 
@@ -205,7 +238,7 @@ void read_from_file(Table &table, Ball &ball)
 	stringstream S1(line2);
 	string diameter_of_ball_as_string;
 	getline(S1, diameter_of_ball_as_string, ' ');
-	int diameter = stoi(diameter_of_ball_as_string);
+	double diameter = atof(diameter_of_ball_as_string.c_str());
 
 ////coordinates of ball
 	string line3;
@@ -215,11 +248,11 @@ void read_from_file(Table &table, Ball &ball)
 
 	string x_as_string;
 	getline(S3, x_as_string, ',');
-	int x_coordinate = stoi(x_as_string);
+	double x_coordinate = atof(x_as_string.c_str());
 
 	string y_as_string;
 	getline(S3, y_as_string, ' ');
-	int y_coordinate = stoi(y_as_string);
+	double y_coordinate = atof(y_as_string.c_str());
 
 	ball = Ball(x_coordinate, y_coordinate, diameter);
 	//for()
@@ -299,7 +332,7 @@ int main()
 	ball.direction.y = direction_y;
 	ball.strength = strenght;
 
-	cout<<ball.find_length_of_vector_which_the_ball_will_move(table)<<endl;
+	//cout<<ball.find_length_of_vector_which_the_ball_will_move(table)<<endl;
 
 	ball.move(table);
 
