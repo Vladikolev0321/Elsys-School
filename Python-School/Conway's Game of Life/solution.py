@@ -41,10 +41,10 @@ def next_generation(grid):
         for col in range(cols):
             count_alive_cells = 0
             count_alive_cells = get_count_alive_neighbours_cells(row, col, rows, cols, grid)
-            #print(f"{len(grid)}:{len(grid[row])}")
-            #print(f"{row}:{col}")
-            
-            #print(count_alive_cells)
+#            print(f"{len(grid)}:{len(grid[row])}")
+#            print(f"{row}:{col}")
+
+#            print(count_alive_cells)
             if(grid[row][col] == 1):
                 if(count_alive_cells < 2):
                     grid[row][col] = 0
@@ -57,6 +57,8 @@ def next_generation(grid):
     return grid
 
 
+
+'''
 def print_grid(grid):
     for row in grid:
         for cell in row:
@@ -73,12 +75,13 @@ def animate(grid):
         sleep(1)
         generation = next_generation(generation)
 
-g = [[0 for i in range(5)] for k in range(5)]
+'''
+'''g = [[0 for i in range(5)] for k in range(5)]
 g[2][2] = 1
 print_grid(g)
 g = next_generation(g)
 print_grid(g)
-
+'''
 '''g[2][2] = 1
 g[2][3] = 1
 g[1][3] = 1
