@@ -72,7 +72,7 @@ class FileCopy : public Process
 	}
 
 };
-class AllocateMemory
+class AllocateMemory : 
 
 
 int main()
