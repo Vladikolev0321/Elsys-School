@@ -1,1 +1,5 @@
 check [32,96]
+/////check Points 
+//// when hits the corner check which corner
+/// the check for W is not working
+/// check the collusion and bouncing
