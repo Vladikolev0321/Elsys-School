@@ -77,7 +77,7 @@ public:
 		if(first_length == second_length && first_width == second_width
 		 && first_width * 2 == first_length)
 		{///y1 == y2
-			cout<<1<<endl;
+			//cout<<1<<endl;
 			if(points[0].y == points[1].y && points[0].x != points[1].x
 				&& points[0].y != points[3].y && points[0].x == points[3].x)
 			{
@@ -85,12 +85,12 @@ public:
 			}
 			else
 			{
-				cout<<2<<endl;
+				//cout<<2<<endl;
 				int koef1 = (points[1].y - points[0].y)/(points[1].x - points[0].x);
 				int koef2 = (points[3].y - points[0].y)/(points[3].x - points[0].x);
 				cout<<koef1<<endl;
 				cout<<koef1<<endl;
-
+			
 				if(koef1 * koef2 == -1)
 				{
 					return 1;
@@ -196,15 +196,17 @@ public:
 		//// (xt(direction.x) - (1 - koef)*this->x)/ t = x1
 		//// (yt(direction.y) - (1 - koef)*this->y)/ t = y2
 		
-		/*double vector_length = find_length_of_direction_vector();
+		double vector_length = find_length_of_direction_vector();
 		double W = sqrt( pow(table.points[1].x - table.points[0].x, 2) + pow(table.points[1].y - table.points[0].y, 2) );
+		//cout<<vector_length<<endl;
+		//cout<<W<<endl;
 		//koef
-		if(vector_length >= W / 10 && vector_length <= W*3/10)
+		if(vector_length < W / 10 && vector_length > W*3/10)
 		{
 			cout<<"The length should be in range W/10 and W*3/10"<<endl;
 			return;
 		}
-		*/
+		
 
 		//Point final_point(round((direction.x - (1 - koef)*this->x)/ koef) , round((direction.y - (1 - koef)*this->y)/ koef));
 		Point final_point((direction.x - this->x)*this->strength+this->x, (direction.y - this->y)*this->strength+this->y);
@@ -269,8 +271,8 @@ public:
 		else if(final_point.y > table_up_y)
 		{
 			double sbl_x=(table_up_y-this->skoef+rad)/this->ukoef;
-            cout<<"The ball bounced into the wall ("<<sbl_x<<","<<table_up_y+rad<<")"<<endl;
-            final_point.y= -final_point.y+this->diameter;
+            cout<<"The ball bounced into the wall ("<<sbl_x<<","<<table_up_y-rad<<")"<<endl;
+            final_point.y= -final_point.y-this->diameter;
 
 			this->x = final_point.x;
 			this->y = final_point.y;
@@ -279,8 +281,9 @@ public:
 		}//left
 		else if(final_point.x < table_left_x)
 		{
-			double sbl_y=(table_left_x-this->skoef+rad)/this->ukoef;
-            cout<<"The ball bounced into the wall ("<<sbl_y<<","<<table_left_x+rad<<")"<<endl;
+			//double sbl_y=(table_left_x-this->skoef+rad)/this->ukoef;
+			double sbl_y = table_left_x * this->ukoef + this->skoef - rad;
+            cout<<"The ball bounced into the wall ("<<table_left_x+rad<<","<<sbl_y<<")"<<endl;
             final_point.x= -final_point.x+this->diameter;
 			
 			this->x = final_point.x;
@@ -290,9 +293,10 @@ public:
 		}
 		else if(final_point.x > table_right_x)
 		{
-			double sbl_y=(table_right_x-this->skoef+rad)/this->ukoef;
-            cout<<"The ball bounced into the wall ("<<sbl_y<<","<<table_right_x+rad<<")"<<endl;
-            final_point.x= -final_point.x+this->diameter;
+			//double sbl_y=(table_right_x-this->skoef+rad)/this->ukoef;
+			double sbl_y = table_right_x * this->ukoef + this->skoef - rad;
+            cout<<"The ball bounced into the wall ("<<table_right_x-rad<<","<<sbl_y<<")"<<endl;
+            final_point.x= -final_point.x-this->diameter;
 			
 			this->x = final_point.x;
 			this->y = final_point.y;
@@ -303,6 +307,9 @@ public:
 		{
 			this->x = final_point.x;
 			this->y = final_point.y;
+
+			cout<<final_point.x<<" "<<final_point.y<<endl;
+
 		}
 
 		/// y = a.x + b
@@ -431,7 +438,7 @@ int main()
 	Table table;
 	Ball ball;
 	read_from_file(table, ball);
-	table.print_points();
+	//table.print_points();
 	while (table.check_if_rectangle() != 1)
 	{
 		write_to_file();
@@ -445,30 +452,39 @@ int main()
 	cout<<ball.get_diameter()<<endl;
 	*/
 	//Printing table
-	table.print_points();
+	//table.print_points();
 	
 
 	//input sila, direction.x direction.y    primer 1: 2     230      110   
-	cout<<"Sila:"<<endl;
-	float strenght;
-	int direction_x, direction_y;
-	cin>>strenght;
-	cin>>direction_x;
-	cin>>direction_y;
-	while(strenght<2||strenght>5)
+	string answer2;
+	while(answer2 != "exit")
 	{
-		cout<<"Strenght should be between 2 and 5"<<endl;
+		cout<<"Sila and directions:"<<endl;
+		float strenght;
+		int direction_x, direction_y;
 		cin>>strenght;
+		cin>>direction_x;
+		cin>>direction_y;
+		while(strenght<2||strenght>5)
+		{
+			cout<<"Strenght should be between 2 and 5"<<endl;
+			cin>>strenght;
+		}
+		cout<<strenght<<"|"<<direction_x<<"|"<<direction_y<<endl;
+
+		ball.direction.x = direction_x;
+		ball.direction.y = direction_y;
+		ball.strength = strenght;
+
+		//cout<<ball.find_length_of_vector_which_the_ball_will_move(table)<<endl;
+
+		ball.move(table);
+
+		cout<<"Do you want to exit(exit/no)"<<endl;
+		cin>>answer2;
+		//cout<<answer2<<endl;
 	}
-	cout<<strenght<<"|"<<direction_x<<"|"<<direction_y<<endl;
-
-	ball.direction.x = direction_x;
-	ball.direction.y = direction_y;
-	ball.strength = strenght;
-
-	//cout<<ball.find_length_of_vector_which_the_ball_will_move(table)<<endl;
-
-	ball.move(table);
+	
 
 	return 0;
 }
