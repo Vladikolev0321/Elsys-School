@@ -58,21 +58,6 @@ public:
 		double first_width = sqrt( pow(points[2].x - points[1].x, 2) + pow(points[2].y - points[1].y, 2) );
 		double second_width = sqrt( pow(points[3].x - points[0].x, 2) + pow(points[3].y - points[0].y, 2) );
 		
-		
-		///1 lenght and 1 width /// 
-		/// ab||ox  ad || oy 2 points width0.y == width1.y width0.x != width1.x
-		// 2 points lenght0.y != lenght3.y lenght0.x == length3.x
-		// after that 
-		// if ab !|| OX ad !||0X
-		// y = ax + b    a-naklon(uglov koef)
-		// a = (b1.y-a0.y)/(b1.x - a0.x) (pri ab)
-		// calculate a for AD
-		// aAB * aAD == -1 => AB perpendik AD
-		/*cout<<first_length<<endl;
-		cout<<second_length<<endl;
-		cout<<first_width<<endl;
-		cout<<second_width<<endl;
-		*/
 
 		if(first_length == second_length && first_width == second_width
 		 && first_width * 2 == first_length)
@@ -150,57 +135,19 @@ public:
 		return diameter;
 	}
 	
-	/////  max and min length of vector W/10 и W*3/10, w - length
-	/////  min sila - 2  min length - 32
-	////   pri pod sila - 2,5 , x length
-	///2/2,5 = 32/x
-	/// (32*2,5)/2 = x
-	//length of vector with given sila x = (podsila*mindulj) / minsila
 
-	/*double find_length_of_vector_which_the_ball_will_move(Table table)
-	{
-		double W = sqrt( pow(table.points[1].x - table.points[0].x, 2) + pow(table.points[1].y - table.points[0].y, 2) );
-		//W/10
-		//cout<<W<<endl;
-		double min_length =  W/10;
-		//cout<<min_length<<endl;
-		double length_of_final_vector = (this->strength * min_length) / 2;
-
-		return length_of_final_vector;
-	}*/
 	double find_length_of_direction_vector()
 	{
 		double length_of_direction_vector = sqrt( pow(direction.x - this->x, 2) + pow(direction.y - this->y, 2) );
 		return length_of_direction_vector; 
 	}
-	/*
+	
 	void move(Table table)
 	{
-		double koef = find_length_of_direction_vector() / find_length_of_vector_which_the_ball_will_move(table);
-		Point vector_coordinates(direction.x - this->x, direction.y - this->y);
-		Point final_vector_coordinates(koef * vector_coordinates.x, koef * vector_coordinates.y);
-
-		Point final_point(final_vector_coordinates.x+this->x, final_vector_coordinates.y + this->y);
-
-		cout<<final_point.x<<" "<<final_point.y<<endl; 
-		// set x and y of ball to final point coordiantes;
-	}
-	*/
-
-	void move(Table table)
-	{
-		////////Change koef
-		//double koef = 1 / this->strength;
-
-		//// x1 = (1 - koef) * this->x + koef
-		//// (xt(direction.x) - (1 - koef)*this->x)/ t = x1
-		//// (yt(direction.y) - (1 - koef)*this->y)/ t = y2
 		
 		double vector_length = find_length_of_direction_vector();
 		double W = sqrt( pow(table.points[1].x - table.points[0].x, 2) + pow(table.points[1].y - table.points[0].y, 2) );
-		//cout<<vector_length<<endl;
-		//cout<<W<<endl;
-		//koef
+		
 		if(vector_length < W / 10 && vector_length > W*3/10)
 		{
 			cout<<"The length should be in range W/10 and W*3/10"<<endl;
@@ -254,10 +201,6 @@ public:
 		//down
 		if(final_point.y < table_down_y)
 		{
-		  /*double xCollision=(bottom-newHit.trajectoryB+newHit.hitBall.radius)/newHit.trajectoryA;
-            cout<<"The ball bounced into the wall ("<<xCollision<<","<<bottom+newHit.hitBall.radius<<")"<<endl;
-            newHit.newY=-newHit.newY+2*newHit.hitBall.radius;
-			*/
 			double sbl_x=(table_down_y-this->skoef+rad)/this->ukoef;
             cout<<"The ball bounced into the wall ("<<sbl_x<<","<<table_down_y+rad<<")"<<endl;
             final_point.y= -final_point.y+this->diameter;
@@ -270,9 +213,9 @@ public:
 		}//up
 		else if(final_point.y > table_up_y)
 		{
-			double sbl_x=(table_up_y-this->skoef+rad)/this->ukoef;
+			double sbl_x=(table_up_y-this->skoef-rad)/this->ukoef;
             cout<<"The ball bounced into the wall ("<<sbl_x<<","<<table_up_y-rad<<")"<<endl;
-            final_point.y= -final_point.y-this->diameter;
+            final_point.y= (table_up_y - rad)-(final_point.y - table_up_y - rad) + diameter;
 
 			this->x = final_point.x;
 			this->y = final_point.y;
@@ -281,10 +224,10 @@ public:
 		}//left
 		else if(final_point.x < table_left_x)
 		{
-			//double sbl_y=(table_left_x-this->skoef+rad)/this->ukoef;
-			double sbl_y = table_left_x * this->ukoef + this->skoef - rad;
-            cout<<"The ball bounced into the wall ("<<table_left_x+rad<<","<<sbl_y<<")"<<endl;
-            final_point.x= -final_point.x+this->diameter;
+			double sbl_x = table_left_x + rad;
+			double sbl_y = sbl_x * this->ukoef + this->skoef;
+            cout<<"The ball bounced into the wall ("<<sbl_x<<","<<sbl_y<<")"<<endl;
+            final_point.x = sbl_x - (final_point.x - sbl_x);
 			
 			this->x = final_point.x;
 			this->y = final_point.y;
@@ -293,11 +236,11 @@ public:
 		}
 		else if(final_point.x > table_right_x)
 		{
-			//double sbl_y=(table_right_x-this->skoef+rad)/this->ukoef;
-			double sbl_y = table_right_x * this->ukoef + this->skoef - rad;
+			double sbl_x = table_left_x - rad;
+			double sbl_y = sbl_x * this->ukoef + this->skoef;
             cout<<"The ball bounced into the wall ("<<table_right_x-rad<<","<<sbl_y<<")"<<endl;
-            final_point.x= -final_point.x-this->diameter;
-			
+            final_point.x = sbl_x - (final_point.x - sbl_x);
+
 			this->x = final_point.x;
 			this->y = final_point.y;
 
@@ -311,21 +254,6 @@ public:
 			cout<<final_point.x<<" "<<final_point.y<<endl;
 
 		}
-
-		/// y = a.x + b
-		/// 
-		//// Check if ball hits the corner
-		/*for(int i = 0; i < table.points.size(); i++)
-		{
-			if(table.points[i].x == final_point.x && table.points[i].y == final_point.y)
-			{	
-				this->x = this->start_x;
-				this->y = this->start_y;
-				return;
-			}
-		}
-		*/
-		
 
 	}
 
