@@ -168,29 +168,29 @@ public:
 };
 class Server
 {
-    vector<Torrent> torrents;
-    vector<GameTorrent> gametorrents;
-    vector<FilmTorrent> filmtorrents;
-    vector<SoftwareTorrent> softwaretorrents;
+    vector<Torrent*> torrents;
+    vector<GameTorrent*> gametorrents;
+    vector<FilmTorrent*> filmtorrents;
+    vector<SoftwareTorrent*> softwaretorrents;
     vector<string> users_names;
 public:
     Server(){};
-    void add_torrent(Torrent& torrent)
+    void add_torrent(Torrent* torrent)
     {
         torrents.push_back(torrent);
     }
-    void add_torrent(GameTorrent& torrent)
+    void add_torrent(GameTorrent* torrent)
     {
         torrents.push_back(torrent);
         gametorrents.push_back(torrent);
     }
-    void add_torrent(FilmTorrent& torrent)
+    void add_torrent(FilmTorrent* torrent)
     {
         torrents.push_back(torrent);
         filmtorrents.push_back(torrent);
         //cout<<torrent.toString();
     }
-    void add_torrent(SoftwareTorrent& torrent)
+    void add_torrent(SoftwareTorrent* torrent)
     {
         torrents.push_back(torrent);
         softwaretorrents.push_back(torrent);
@@ -199,60 +199,78 @@ public:
     {
         for (int i = 0; i < torrents.size(); i++)
         {
-            cout<<torrents[i].toString()<<endl;
+            cout<<torrents[i]->toString()<<endl;
+            cout<<endl;
         }
     }
-    Torrent search_by_heading(string text)///not sure
+    vector<Torrent*> search_by_heading(string text)///not sure
     {
+        vector<Torrent*> searchedTor;
         for (int i = 0; i < torrents.size(); i++)
         {
-            if(torrents[i].get_heading() == text)
+            if(torrents[i]->get_heading() == text)
             {
-                return torrents[i];
+                searchedTor.push_back(torrents[i]);
+                //return torrents[i];
             }
         }
+        return searchedTor;
     }
-    GameTorrent search_by_maturity_rating(char rating)
+    vector<GameTorrent*> search_by_maturity_rating(char rating)
     {
+        vector<GameTorrent*> searchedTor;
         for (int i = 0; i < gametorrents.size(); i++)
         {
-            if(gametorrents[i].get_maturity_rating() == rating)
+            if(gametorrents[i]->get_maturity_rating() == rating)
             {
-                return gametorrents[i];
+                searchedTor.push_back(gametorrents[i]);
+                //return gametorrents[i];
             }
         }
+        return searchedTor;
     }
-    FilmTorrent search_by_director_name(string name)
+    vector<FilmTorrent*> search_by_director_name(string name)
     {
+        vector<FilmTorrent*> searchedTor;
         for (int i = 0; i < filmtorrents.size(); i++)
         {
-            if(filmtorrents[i].get_director_name() == name)
+            if(filmtorrents[i]->get_director_name() == name)
             {
-                return filmtorrents[i];
+                searchedTor.push_back(filmtorrents[i]);
+                //return filmtorrents[i];
             }
         }
-        
+        return searchedTor;
     }
-    SoftwareTorrent search_by_software_version(int major_version)
+    vector<SoftwareTorrent*> search_by_majore_software_version(int major_version)
     {
+        vector<SoftwareTorrent*> searchedTor;
         for (int i = 0; i < softwaretorrents.size(); i++)
         {
-            if(softwaretorrents[i].get_major_version() == major_version)
+            if(softwaretorrents[i]->get_major_version() == major_version)
             {
-                return softwaretorrents[i];
+                searchedTor.push_back(softwaretorrents[i]);
+                //return softwaretorrents[i];
             }
         }
-        
+        return searchedTor;
     }
 };
 int main()
 {
+    //Inicialising torrents
     Torrent t1 = Torrent("Star Wars", 10, "Vladi", 20);
     GameTorrent t2 = GameTorrent("MacOS", 'P',
     "Star Wars2", 10, "Vladi", 20);
-    FilmTorrent t3 = FilmTorrent("Misho", 20, "Bulgarian", "Star Wars3", 10, "Vladi", 20);
+    FilmTorrent *t3 = new FilmTorrent("Misho", 20, "Bulgarian", "Star Wars3", 10, "Vladi", 20);
     int version[3] = {1, 22, 33};
-    SoftwareTorrent t4 = SoftwareTorrent("Gosho", "Linux", version, "Star Wars4", 10, "Vladi", 20);
+    int version2[3] = {0, 22, 33};
+
+    SoftwareTorrent *t4 = new SoftwareTorrent("Gosho", "Linux", version, "Star Wars4", 10, "Vladi", 20);
+    SoftwareTorrent *t5 = new SoftwareTorrent("Gosho", "Linux", version2, "Star Wars5", 10, "Vladi", 20);
+    SoftwareTorrent *t6 = new SoftwareTorrent("Gosho", "Linux", version, "Star Wars6", 10, "Vladi", 20);
+
+
     /*
     cout<<t1.toString()<<endl;
     cout<<endl;
@@ -263,10 +281,23 @@ int main()
     cout<<t4.toString()<<endl;
     */
 
+    //Inicialising server
     Server server;
     server.add_torrent(t3);
     server.add_torrent(t4);
+    server.add_torrent(t5);
+    server.add_torrent(t6);
     //server.print_torrents();
+
+    cout<<"Result by search:"<<endl;
+    vector<SoftwareTorrent*> softtor_with_vers1;
+    softtor_with_vers1 = server.search_by_majore_software_version(1);
+    for (int i = 0; i < softtor_with_vers1.size(); i++)
+    {
+        cout<<softtor_with_vers1[i]->toString()<<endl;
+        cout<<endl;
+    }
+    
 
 
 
