@@ -7,7 +7,7 @@ GameTorrent::GameTorrent(std::string platform, char maturity_rating,
       : Torrent(heading, size, uploader_name, count_downloads)
 {
         if(platform.empty()){throw "empty platform name";};
-        if(maturity_rating == ' '){throw "empty maturity rating";};
+        if(maturity_rating == ' '){throw "empty maturity rating";}; 
 
         this->platform = platform;
         this->maturity_rating = maturity_rating;
