@@ -4,7 +4,10 @@
 int main()
 {
     //Inicialising torrents
-    Torrent t1 = Torrent("Star Wars", 10, "Vladi", 20);
+
+    try
+    {
+        Torrent t1 = Torrent("Star Wars", 10, "Vladi", 20);
     GameTorrent *t2 = new GameTorrent("MacOS", 'P',
     "Star Wars2", 10, "Vladi", 20);
     FilmTorrent *t3 = new FilmTorrent("Misho", 20, "Bulgarian", "Star Wars3", 10, "Vladi", 20);
@@ -68,5 +71,11 @@ int main()
         std::cout<<std::endl;
     }
 
+    
+    }
+    catch(const char* ex)
+    {
+        std::cout<<ex<<std::endl;
+    }
     return 0;
 }
