@@ -23,7 +23,7 @@ public class Main {
         System.out.println(returned1.get_perimeter());
         System.out.println(returned2.get_perimeter());
         System.out.println(returned3.get_perimeter());
-        
+
 
     }
     public static Triangle get_biggest_perimeter(Triangle[] triangles)
