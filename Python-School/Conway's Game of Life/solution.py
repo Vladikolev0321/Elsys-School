@@ -34,13 +34,13 @@ def next_generation(grid):
 
         return count_alive_cells
 
-    rows = len(grid)
-    cols = len(grid[0])
+#    rows = len(grid)
+#    cols = len(grid[0])
 
-    for row in range(rows):
-        for col in range(cols):
+    for row in range(len(grid)):
+        for col in range(len(grid[row])):
             count_alive_cells = 0
-            count_alive_cells = get_count_alive_neighbours_cells(row, col, rows, cols, grid)
+            count_alive_cells = get_count_alive_neighbours_cells(row, col, len(grid), len(grid[row]), grid)
 #            print(f"{len(grid)}:{len(grid[row])}")
 #            print(f"{row}:{col}")
 
@@ -55,6 +55,7 @@ def next_generation(grid):
                     grid[row][col] = 1
 
     return grid
+
 
 
 
