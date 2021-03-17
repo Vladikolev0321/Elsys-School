@@ -29,7 +29,7 @@ public class Computer {
         }
 
         int motherBoardCount = 0;
-        for(var part : components){
+        for(IPart part : components){
             if(part instanceof MotherBoard){
                 motherBoardCount++;
                 if(motherBoardCount > 1){

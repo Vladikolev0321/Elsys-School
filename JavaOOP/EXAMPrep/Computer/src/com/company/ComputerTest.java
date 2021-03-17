@@ -15,7 +15,7 @@ class ComputerTest {
     void setUp() {
         List<IPart> temp = new ArrayList<>();
         temp.add(new MotherBoard("am1"));
-        //temp.add(new MotherBoard("am1"));
+        temp.add(new MotherBoard("am1"));
 
         computer = new Computer(temp);
     }
