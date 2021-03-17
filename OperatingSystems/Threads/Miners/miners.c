@@ -76,7 +76,8 @@ int main(int argc, char *argv[])
         rc = pthread_create(&miners[i], NULL, &mine, &index);
         if(rc)
         {
-            printf(strerror(rc));
+            //printf(strerror(rc));
+            printf("Error creating");
             return 1;
         }
     }
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
         rc = pthread_create(&sellers[i], NULL, &sell, &index);
         if(rc)
         {
-            printf(strerror(rc));
+            printf("Error creating");
             return 1;
         }
 
