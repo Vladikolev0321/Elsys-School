@@ -1,3 +1,7 @@
+// NAME: Vladislav Kolev
+// CLASS: XI b
+// NUMBER: 7
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -6,8 +10,8 @@
 #include <unistd.h>
 
 pthread_mutex_t mutex;
-int turn = 0;
-int count_gold = 0;
+//int turn = 0;
+long int count_gold = 0;
 
 void *mine(void *arg)
 {
@@ -59,21 +63,27 @@ int main(int argc, char *argv[])
     int seller_count = 1;
     //pthread_t miner, seller;
 
-    miners_count = atoi(argv[1]);
-    seller_count = atoi(argv[2]);
+    if(argc > 2)
+    {
+        miners_count = atoi(argv[1]);
+        seller_count = atoi(argv[2]);
+    }
 
     pthread_t miners[miners_count];
     pthread_t sellers[seller_count];
     
 
-    pthread_mutex_init(&mutex, NULL);
+    if(pthread_mutex_init(&mutex, NULL))
+    {
+        return 1;
+    }
 
     for (int i = 0; i < miners_count; i++)
     {
         int index = i + 1;
         
-        printf("%d", index);
-        rc = pthread_create(&miners[i], NULL, &mine, &index);
+        //printf("%d", index);
+        rc = pthread_create(&miners[i], NULL, mine, &index);
         if(rc)
         {
             //printf(strerror(rc));
@@ -86,7 +96,7 @@ int main(int argc, char *argv[])
     {
         int index = i + 1;
 
-        rc = pthread_create(&sellers[i], NULL, &sell, &index);
+        rc = pthread_create(&sellers[i], NULL, sell, &index);
         if(rc)
         {
             printf("Error creating");
@@ -97,16 +107,22 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < miners_count; i++)
     {
-        pthread_join(miners[i], NULL);
+        if(pthread_join(miners[i], NULL))
+        {
+            return 1;
+        }
     }
     for (int i = 0; i < seller_count; i++)
     {
-        pthread_join(sellers[i], NULL);
+        if(pthread_join(sellers[i], NULL))
+        {
+            return 1;
+        }
     }
     
     
     
-    printf("Gold: %d\n", count_gold);
+    printf("Gold: %ld\n", count_gold);
     
     
     

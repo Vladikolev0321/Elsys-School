@@ -1,0 +1,29 @@
+/*int main(int argc, char const *argv[])
+{
+	char str[] = "Hello world";
+	char **cmd_args = parse_cmdline(str);
+
+	int counter = 0;
+	while(cmd_args[counter] != NULL)
+	{
+		//free(cmd_args[i]);
+		counter++;
+	}
+	for (int i = 0; i < counter; i++)
+	{
+		free(cmd_args[i]);
+	}
+
+	free(cmd_args);
+	/*free(cmd_args);
+	free(returned[0]);
+	free(returned[1]);
+	free(returned);
+	
+	///free_memory(returned);
+
+	return 0;
+}
+*/
+
+

@@ -11,9 +11,9 @@ void *test(void *arg)
     int index = *(int*)arg;
     for(int i = 0; i < M; i++)
     {
-        pthread_mutex_lock(&mutex);
-        printf("Buyer %d takes car M\n", index);
-        printf("Buyer %d returns car M\n", index);
+        pthread_mutex_lock(&mutex);// try lock check //B/check flag
+        printf("Buyer %d takes car %d.\n", index, i);
+        printf("Buyer %d returns car %d.\n", index, i);
         pthread_mutex_unlock(&mutex);
     }
     return NULL;
