@@ -52,7 +52,8 @@ void *work(void *wo_indexes)
                {
                    if(blocks[i].size == 0)
                    {
-                       continue;
+                     pthread_mutex_unlock(&blocks[i].block_mutex);
+                     continue;
                    }
 
                    printf("SCV %d is mining from mineral block %d\n", w_indexes->curr_index, i+1); // TO ADD
