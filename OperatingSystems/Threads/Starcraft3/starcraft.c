@@ -41,8 +41,13 @@ void *work(void *wo_indexes)
 {
     struct worker_indexes *w_indexes = wo_indexes; 
     int count_mined = 0;
-    while(count_all_minerals != 0)
+    while(1)
     {
+       if(count_all_minerals == 0)
+       {
+           break;
+       }
+       
        for (int i = 0; i < count_blocks; i++)
        {
            if(blocks[i].size > 0)
@@ -103,7 +108,7 @@ void *work(void *wo_indexes)
        
     }
     
-
+    free(wo_indexes);
     //return NULL;
     pthread_exit(NULL);
 }
@@ -140,7 +145,7 @@ int main(int argc, char *argv[])
     /// creating first 5 workers 
     pthread_t *workers = malloc(200 * sizeof(pthread_t)); // should allocate for 5 workers
     ///
-    struct worker_indexes worker_indexes;
+   // struct worker_indexes worker_indexes;
     //worker_indexes.indexes = malloc(5 * sizeof(struct worker_indexes));/// chnege allocation
     //int workers_indexes[count_workers]; 
     ///
@@ -173,7 +178,7 @@ int main(int argc, char *argv[])
 
         if(input == 'm')
         {
-            if(command_center.minerals_got >= 50)
+            if(command_center.minerals_got >= 50 && command_center.count_soldiers < 20)
             {
                 sleep(1);
                 command_center.minerals_got -= 50;
@@ -194,10 +199,13 @@ int main(int argc, char *argv[])
                 sleep(4);
                 //printf("SCV good to go, sir.\n");
                 //// to realloc workers
+                struct worker_indexes *worker_indexes = malloc(sizeof(struct worker_indexes));
+                worker_indexes->curr_index = command_center.count_workers;
+                //
                 command_center.count_workers++;
-                worker_indexes.curr_index = command_center.count_workers - 1;
+            //    worker_indexes.curr_index = command_center.count_workers - 1;
                 int currIndex = command_center.count_workers - 1;
-                int result = pthread_create(&workers[currIndex], NULL, &work, (void*)&worker_indexes);//(void*)workers_indexes
+                int result = pthread_create(&workers[currIndex], NULL, &work, (void*)worker_indexes);//(void*)workers_indexes
                 if(result)
                 {
                     printf("Error creating");
@@ -216,7 +224,10 @@ int main(int argc, char *argv[])
     /// pthread join 
     for (int i = 0; i < command_center.count_workers; i++)
     {
-        pthread_join(workers[i], NULL);
+        if(pthread_join(workers[i], NULL) != 0)
+        {
+            return 1;
+        }
     }
     
 
