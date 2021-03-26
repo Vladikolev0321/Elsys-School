@@ -50,11 +50,12 @@ void *work(void *wo_indexes)
        
        for (int i = 0; i < count_blocks; i++)
        {
-           if(blocks[i].size > 0)
-           {
-               sleep(3);
-               if(pthread_mutex_trylock(&blocks[i].block_mutex) == 0)
-               {
+           if(pthread_mutex_trylock(&blocks[i].block_mutex) == 0)
+            {
+                if(blocks[i].size > 0)
+                {
+                    sleep(3);
+               
                    if(blocks[i].size == 0)
                    {
                      pthread_mutex_unlock(&blocks[i].block_mutex);
@@ -82,7 +83,7 @@ void *work(void *wo_indexes)
                    //i = 0;
                    break;
 
-                  }
+                }
 
            }
        }
@@ -161,6 +162,8 @@ int main(int argc, char *argv[])
         if(result)
         {
             printf("Error creating");
+            free(blocks);
+            free(workers);
             return 1;
         }
     }
@@ -209,6 +212,8 @@ int main(int argc, char *argv[])
                 if(result)
                 {
                     printf("Error creating");
+                    free(blocks);
+                    free(workers);
                     return 1;
                 }
                 printf("SCV good to go, sir.\n");
@@ -226,6 +231,8 @@ int main(int argc, char *argv[])
     {
         if(pthread_join(workers[i], NULL) != 0)
         {
+            free(blocks);
+            free(workers);
             return 1;
         }
     }
@@ -239,6 +246,8 @@ int main(int argc, char *argv[])
         if(pthread_mutex_destroy(&blocks[i].block_mutex))
         {
             //printf("Error destroying");
+            free(blocks);
+            free(workers);
             return 1;
         }
         //free(&blocks[i].block_mutex);
@@ -246,6 +255,8 @@ int main(int argc, char *argv[])
     if(pthread_mutex_destroy(&command_center_mutex))
     {
         //printf("Error destroying");
+        free(blocks);
+        free(workers);
         return 1;
     }
     
@@ -264,6 +275,7 @@ int main(int argc, char *argv[])
     
     free(blocks);
     free(workers);
+    //free(worker_indexes);
 
     return 0;
 
