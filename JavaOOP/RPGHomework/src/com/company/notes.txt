@@ -1,0 +1,12 @@
+is Mage constructor hardcoded;- yes
+what to do with the Potion method/(consume)/ How to sum mana to -
+a class that has no attribute; -
+should i add maxCount items in Hotbar and Inventar//-
+what to do with the capacity;-
+TODO: get inventar and hotbar capacity maybe from cosntructor-
+check pick method if it is what is think;-
+check useAt method if indexes are correct;-
+fix items constructors acess modifiers-
+should item when is consumed be removed from the slot
+base damage in scroll not sure it is calculated that way
+TODO: should fix getters and setters acess modif
