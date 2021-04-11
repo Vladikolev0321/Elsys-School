@@ -1,0 +1,7 @@
+mini
+material
+TO DO:
+put mutexes on all needed places
+even when i only check
+
+free memory if error
