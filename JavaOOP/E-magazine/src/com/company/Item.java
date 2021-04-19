@@ -13,5 +13,19 @@ public class Item {
         this.metricunit = metricunit;
     }
 
+    public int getID() {
+        return ID;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public MetricUnit getMetricunit() {
+        return metricunit;
+    }
 }

@@ -13,5 +13,7 @@ public class Address {
         this.numberOfApartment = numberOfApartment;
     }
 
-
+    public Country getCountry() {
+        return country;
+    }
 }

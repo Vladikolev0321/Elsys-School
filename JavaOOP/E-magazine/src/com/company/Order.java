@@ -18,4 +18,15 @@ public class Order {
         this.items = items;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Address getAdressForDelivery() {
+        return adressForDelivery;
+    }
 }

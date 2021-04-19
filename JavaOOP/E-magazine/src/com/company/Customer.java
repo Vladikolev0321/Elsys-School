@@ -13,5 +13,19 @@ public class Customer {
         this.adress = adress;
     }
 
+    public int getID() {
+        return ID;
+    }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public Address getAdress() {
+        return adress;
+    }
 }
