@@ -22,4 +22,8 @@ public class Automobile {
     public double getPriceMultiplier() {
         return priceMultiplier;
     }
+
+    public String getType() {
+        return type;
+    }
 }
