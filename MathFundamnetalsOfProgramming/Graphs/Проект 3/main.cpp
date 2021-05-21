@@ -8,6 +8,7 @@ using namespace std;
 
 vector<vector<int>> G;
 vector<vector<int>> connected_nodes;
+vector<vector<int>> all_paths;
 
 
 void print(vector<vector<int>> v) {
@@ -21,7 +22,35 @@ void print(vector<vector<int>> v) {
     }
 }
 
+void find_all_paths_from_starting_point(int curr_pos, vector<int> curr_path){
+    curr_path.push_back(curr_pos);
+    
+    vector<bool> is_visited;
 
+    for (int i = 0; i < G.size(); i++){
+        is_visited.push_back(false);
+    }
+    for (int j = 0; j < curr_path.size(); j++){
+        is_visited[curr_path[j]] = true;
+    }
+
+    /// check if all nodes in the graph are visited
+    bool are_all_visited = true;
+    for (int i = 0; i < G.size(); i++){
+        if(!is_visited[i]){
+            are_all_visited = false;
+        }
+    }
+
+    if(are_all_visited){
+        ///if
+        
+        all_paths.push_back(curr_path);
+    }
+    
+
+
+}
 
   
 int main()
