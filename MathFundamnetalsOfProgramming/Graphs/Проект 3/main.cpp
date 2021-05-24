@@ -10,6 +10,7 @@ vector<vector<int>> G;
 vector<vector<int>> connected_nodes;
 vector<vector<int>> all_paths;
 
+vector<vector<int>> from_start_to_end;
 
 void print(vector<vector<int>> v) {
     cout << v.size() << endl;
@@ -43,7 +44,7 @@ void find_all_paths_from_starting_point(int start_pos, int curr_pos,  vector<int
     }
 
     if(are_all_visited){
-        if(G[curr_pos][start_pos] != 0){
+        if(G[curr_pos][start_pos] > 0){ // if it is -1 or 0 to not count as path
             all_paths.push_back(curr_path);
         }
     }else{
@@ -55,47 +56,48 @@ void find_all_paths_from_starting_point(int start_pos, int curr_pos,  vector<int
         
     }
 }
-// void find_all_paths_from_starting_point2(int start_pos, int curr_pos,  vector<int> curr_path){
+
+void find_shortest_path_from_start_to_end(int start_pos, int end_pos, int curr_pos,  vector<int> curr_path){
+    // if(curr_pos == end_pos){
+    //     return;
+    // }
+    curr_path.push_back(curr_pos);
     
-//     for (int i = 0; i < connected_nodes[curr_pos].size(); i++){
+    vector<bool> is_visited;
+
+    for (int i = 0; i < G.size(); i++){
+        is_visited.push_back(false);
+    }
+    for (int j = 0; j < curr_path.size(); j++){
+        is_visited[curr_path[j]] = true;
+    }
+
+    /// check if all nodes in the graph are visited
+    bool are_all_visited = true;
+    for (int i = 0; i < G.size(); i++){
+        if(!is_visited[i]){
+            are_all_visited = false;
+        }
+    }
+
+    if(are_all_visited){
+        if(G[curr_pos][start_pos] > 0){ // if it is -1 or 0 to not count as path
+            from_start_to_end.push_back(curr_path);
+        }
+    }else{
+        for (int i = 0; i < connected_nodes[curr_pos].size(); i++){
+            cout<<"in"<<endl;
+            if(!is_visited[connected_nodes[curr_pos][i]] && connected_nodes[curr_pos][i] != end_pos){
+                find_shortest_path_from_start_to_end(start_pos, end_pos, connected_nodes[curr_pos][i], curr_path);
+             }else if(connected_nodes[curr_pos][i] == end_pos){
+                 curr_path.push_back(connected_nodes[curr_pos][i]);
+                 return;
+             }
+        }
         
-//             vector<bool> is_visited;
-//             if(!is_visited[connected_nodes[curr_pos][i]]){
-//                 find_all_paths_from_starting_point(start_pos, connected_nodes[curr_pos][i], curr_path);
-//             }
-//         }
-//     curr_path.push_back(curr_pos);
-    
+    }
+}
 
-
-
-
-
-//     for (int i = 0; i < G.size(); i++){
-//         is_visited.push_back(false);
-//     }
-//     for (int j = 0; j < curr_path.size(); j++){
-//         is_visited[curr_path[j]] = true;
-//     }
-
-//     /// check if all nodes in the graph are visited
-//     bool are_all_visited = true;
-//     for (int i = 0; i < G.size(); i++){
-//         if(!is_visited[i]){
-//             are_all_visited = false;
-//         }
-//     }
-
-//     if(are_all_visited){
-//         ///if
-//         if(G[curr_pos][start_pos] != 0){
-//             all_paths.push_back(curr_path);
-//         }
-//     }else{
-        
-        
-//     }
-// }
 void calculate_shortest_path(){
     vector<int> all_paths_sum;
     for (int i = 0; i < all_paths.size(); i++){
@@ -188,6 +190,11 @@ int main(int argc, char *argv[])
 
     calculate_shortest_path();
     
+    
+    vector<int> curr_path2;
+    cout<<"here"<<endl;
+    find_shortest_path_from_start_to_end(start_node, 3, start_node, curr_path2);
+    print(from_start_to_end);
 
     
     
