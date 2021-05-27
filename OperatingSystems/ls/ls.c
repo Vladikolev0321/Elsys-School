@@ -11,13 +11,10 @@
 #include <unistd.h>
 #include <dirent.h>
 
-int main(int argc, char *argv[])
-{
-    for (int i = 1; i < argc; i++)
-    {
-        char *name = argv[i];
 
-        struct stat st;
+void process(char *name)
+{
+    struct stat st;
         stat(name, &st);
         if(S_ISREG(st.st_mode))
         {
@@ -30,6 +27,7 @@ int main(int argc, char *argv[])
             while ((d = readdir(dir)) != NULL)
             {
                 //printf("in");
+                process(d->d_name);
         	    printf("%s\n", d->d_name);
             }
             closedir(dir);
@@ -63,6 +61,15 @@ int main(int argc, char *argv[])
             //TODO:
         }
 
+}
+
+int main(int argc, char *argv[])
+{
+    for (int i = 1; i < argc; i++)
+    {
+        char *name = argv[i];
+        process(name);
+        
     }
     
 }
