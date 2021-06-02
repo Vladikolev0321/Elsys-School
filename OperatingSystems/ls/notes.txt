@@ -1,0 +1,2 @@
+check if file is hidden -
+fix error handling 
