@@ -1,13 +1,17 @@
 package com.company;
 
+import java.util.concurrent.Semaphore;
+
 public class Crystal {
     private int currCrystals;
+    private Semaphore semaphore;
+
 
     public Crystal(int currCrystals) {
         this.currCrystals = currCrystals;
     }
 
-    public int mine(int wantedCrystals){
+    public synchronized int mine(int wantedCrystals){
         int finalCrystals = 0;
         if(currCrystals >= wantedCrystals){
             currCrystals -= wantedCrystals;
@@ -22,5 +26,9 @@ public class Crystal {
 
     public int getCurrCrystals() {
         return currCrystals;
+    }
+
+    public synchronized void setCurrCrystals(int currCrystals) {
+        this.currCrystals = currCrystals;
     }
 }
